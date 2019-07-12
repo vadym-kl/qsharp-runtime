@@ -32,12 +32,10 @@ Push-Location ../src/Simulation/Native
         Write-Host "##vso[task.logissue type=warning;]Missing drop folder with native dlls ($DROP)"
     }
 Pop-Location
-popd
-
 
 function Pack-One() {
     Param($project, $include_references="")
-    nuget pack $project `
+    nuget pack (Join-Path $PSScriptRoot $project) `
         -OutputDirectory $Env:NUGET_OUTDIR `
         -Properties Configuration=$Env:BUILD_CONFIGURATION `
         -Version $Env:NUGET_VERSION `
