@@ -6,13 +6,32 @@ $ErrorActionPreference = 'Stop'
 & "$PSScriptRoot/set-env.ps1"
 $all_ok = $True
 
+function Copy-One() {
+    param(
+        [string] $src,
+        [string] $dst
+    )
+
+    If (Test-Path $src) { 
+        copy $src $dst
+    } else {
+        Write-Host "##vso[task.logissue type=warning;]Missing file $src"
+    }
+}
+
 Write-Host "##[info]Copy Native simulator xplat binaries"
-pushd ../src/Simulation/Native
-If (-not (Test-Path 'osx')) { mkdir 'osx' }
-If (-not (Test-Path 'linux')) { mkdir 'linux' }
-$DROP="$Env:DROP_NATIVE/src/Simulation/Native/build"
-If (Test-Path "$DROP/libMicrosoft.Quantum.Simulator.Runtime.dylib") { copy "$DROP/libMicrosoft.Quantum.Simulator.Runtime.dylib" "osx/Microsoft.Quantum.Simulator.Runtime.dll" }
-If (Test-Path "$DROP/libMicrosoft.Quantum.Simulator.Runtime.so") { copy "$DROP/libMicrosoft.Quantum.Simulator.Runtime.so"  "linux/Microsoft.Quantum.Simulator.Runtime.dll" }
+Push-Location ../src/Simulation/Native
+    If (-not (Test-Path 'osx')) { mkdir 'osx' }
+    If (-not (Test-Path 'linux')) { mkdir 'linux' }
+
+    $DROP= (Join-Path $Env:DROP_NATIVE "/src/Simulation/Native/build")
+    If (Test-Path $DROP) {
+        Copy-One (Join-Path $DROP "libMicrosoft.Quantum.Simulator.Runtime.dylib") (Join-Path "osx" "Microsoft.Quantum.Simulator.Runtime.dll") 
+        Copy-One (Join-Path $DROP "libMicrosoft.Quantum.Simulator.Runtime.so") (Join-Path "linux" "Microsoft.Quantum.Simulator.Runtime.dll") 
+    } else {
+        Write-Host "##vso[task.logissue type=warning;]Missing drop folder with native dlls ($DROP)"
+    }
+Pop-Location
 popd
 
 
