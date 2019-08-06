@@ -8,6 +8,7 @@ open System.Collections.Generic
 open Microsoft.Quantum.QsCompiler
 open Microsoft.Quantum.QsCompiler.Diagnostics
 open Microsoft.Quantum.QsCompiler.Transformations.BasicTransformations
+open Microsoft.Quantum.QsCompiler.CsharpGeneration
 
 type Logger() =
     inherit LogTracker()
@@ -33,7 +34,7 @@ let [<EntryPoint>] main args =
     let allSources = GetSourceFiles.Apply syntaxTree |> Seq.filter (fun fileName -> fileName.Value.EndsWith ".qs")
     for source in allSources do
         try
-          let content = syntaxTree |> CircuitTransformer.basicWalk |> CircuitTransformer.generate source
+          let content = syntaxTree |> CircuitTransformer.basicWalk |> SimulationCode.generate source
           CompilationLoader.GeneratedFile(source, "output\\", ".g.cs", content) |> ignore
         with | ex -> logger.Log(ex)
     0

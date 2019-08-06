@@ -17,5 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CircuitTransformer\Microsoft.Quantum.CircuitTransformer.fsproj" />
+    <ProjectReference Include="..\CsharpGeneration\Microsoft.Quantum.CsharpGeneration.fsproj" />
   </ItemGroup>
 </Project>
