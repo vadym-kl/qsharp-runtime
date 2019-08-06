@@ -8,6 +8,10 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
     /// on a quantum circuit level. 
     /// It is intended to be used with ....
     /// </summary>
+    /// <remarks>
+    /// Simulators implemented using <see cref="ICircuitizer"/> interface do not manage qubit allocation on their own.
+    /// Instead they are notified when qubits are allocated, released, borrowed
+    /// </remarks>
     public interface ICircuitizer
     {
         /// <summary>
@@ -313,17 +317,107 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
         void ControlledZ(IQArray<Qubit> controls, Qubit qubit);
 
-        void R1(double angle, Qubit target);
-        void ControlledR1(IQArray<Qubit> controls, double angle, Qubit target);
+        /// <summary>
+        /// Called when <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.r1">Microsoft.Quantum.Intrinsic.R1</a> is called in Q#.
+        /// In Q# the operation applies gate given by matrix ((1,0),(0,𝑒𝑥𝑝(𝑖⋅<paramref name="theta"/>))) to <paramref name="qubit"/>.  
+        /// </summary>
+        /// <remarks>
+        /// When adjoint of R1 is called in Q#, <see cref="R1(double, Qubit)"/> is called with <paramref name="theta"/> replaced by -<paramref name="theta"/>.
+        /// The names and the order of the parameters is the same as for the corresponding Q# operation.
+        /// </remarks>
+        /// <param name="theta">Angle about which the qubit is to be rotated.</param>
+        /// <param name="qubit">Qubit to which the gate should be applied.</param>
+        void R1(double theta, Qubit qubit);
 
-        void R1Frac(long numerator, long denominator, Qubit target);
-        void ControlledR1Frac(IQArray<Qubit> controls, long numerator, long denominator, Qubit target);
+        /// <summary>
+        /// Called when controlled <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.r">Microsoft.Quantum.Intrinsic.R</a> is called in Q#.
+        /// In Q# the operation applies gate given by matrix ((1,0),(0,𝑒𝑥𝑝(𝑖⋅<paramref name="theta"/>))) to <paramref name="qubit"/> controlled on <paramref name="controls"/>.  
+        /// </summary>
+        /// <remarks>
+        /// When adjoint of Controlled R1 is called in Q#, <see cref="ControlledR1(IQArray{Qubit}, double, Qubit)"/> is called with <paramref name="theta"/> replaced by -<paramref name="theta"/>.
+        /// The names and the order of the parameters is the same as for the corresponding Q# operation.
+        /// </remarks>
+        /// <param name="controls">The array of qubits on which the operation is controlled.</param>
+        /// <param name="theta">Angle about which the qubit is to be rotated.</param>
+        /// <param name="qubit">Qubit to which the gate should be applied.</param>
+        void ControlledR1(IQArray<Qubit> controls, double theta, Qubit qubit);
 
-        void SWAP(Qubit q1, Qubit q2);
-        void ControlledSWAP(IQArray<Qubit> controls, Qubit q1, Qubit q2);
+        /// <summary>
+        /// Called when <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.r1frac">Microsoft.Quantum.Intrinsic.R1Frac</a> is called in Q#.
+        /// In Q# the operation applies gate given by matrix ((1,0),(0,𝑒𝑥𝑝(𝑖⋅π⋅<paramref name="numerator"/>/2^<paramref name="power"/>))) to <paramref name="qubit"/>.  
+        /// </summary>
+        /// <remarks>
+        /// When adjoint of R1Frac is called in Q#, <see cref="R1Frac(long, long, Qubit)"/> is called with <paramref name="numerator"/> replaced by -<paramref name="numerator"/>.
+        /// The names and the order of the parameters is the same as for the corresponding Q# operation.
+        /// </remarks>
+        /// <param name="numerator">Numerator in the dyadic fraction representation of the angle by which the qubit is to be rotated.</param>
+        /// <param name="power">Power of two specifying the denominator of the angle by which the qubit is to be rotated.</param>
+        /// <param name="qubit">Qubit to which the gate should be applied.</param>
+        void R1Frac(long numerator, long power, Qubit qubit);
 
+        /// <summary>
+        /// Called when a controlled <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.r1frac">Microsoft.Quantum.Intrinsic.R1Frac</a> is called in Q#.
+        /// In Q# the operation applies gate given by matrix ((1,0),(0,𝑒𝑥𝑝(𝑖⋅π⋅<paramref name="numerator"/>/2^<paramref name="power"/>))) to <paramref name="qubit"/> controlled on <paramref name="controls"/>.
+        /// </summary>
+        /// <remarks>
+        /// When adjoint of Controlled RFrac is called in Q#, <see cref="ControlledR1Frac(IQArray{Qubit}, long, long, Qubit)"/> is called with <paramref name="numerator"/> replaced by -<paramref name="numerator"/>.
+        /// The names and the order of the parameters is the same as for the corresponding Q# operation.
+        /// </remarks>
+        /// <param name="controls">The array of qubits on which the operation is controlled.</param>
+        /// <param name="numerator">Numerator in the dyadic fraction representation of the angle by which the qubit is to be rotated.</param>
+        /// <param name="power">Power of two specifying the denominator of the angle by which the qubit is to be rotated.</param>
+        /// <param name="qubit">Qubit to which the gate should be applied.</param>
+        void ControlledR1Frac(IQArray<Qubit> controls, long numerator, long power, Qubit qubit);
+
+        /// <summary>
+        /// Called when <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.swap">Microsoft.Quantum.Intrinsic.SWAP</a> is called in Q#.
+        /// In Q# the operation applies gate given by rule |ψ⟩⊗|ϕ⟩ ↦ |ϕ⟩⊗|ψ⟩ where |ϕ⟩,|ψ⟩ arbitrary one qubit states.
+        /// </summary>
+        /// <remarks>
+        /// When adjoint of SWAP is called in Q#, <see cref="SWAP(Qubit, Qubit)"/> is called because SWAP is self-adjoint.
+        /// The names and the order of the parameters is the same as for the corresponding Q# operation.
+        /// </remarks>
+        /// <param name="qubit1">First qubit to be swapped.</param>
+        /// <param name="qubit2">Second qubit to be swapped.</param>
+        void SWAP(Qubit qubit1, Qubit qubit2);
+
+        /// <summary>
+        /// Called when controlled <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.swap">Microsoft.Quantum.Intrinsic.SWAP</a> is called in Q#.
+        /// In Q# the operation applies gate given by rule |ψ⟩⊗|ϕ⟩ ↦ |ϕ⟩⊗|ψ⟩ where |ϕ⟩,|ψ⟩ arbitrary one qubit states controlled on <paramref name="controls"/>.
+        /// </summary>
+        /// <remarks>
+        /// When adjoint of Controlled SWAP is called in Q#, <see cref="ControlledSWAP(IQArray{Qubit}, Qubit, Qubit)"/> is called because SWAP is self-adjoint.
+        /// The names and the order of the parameters is the same as for the corresponding Q# operation.
+        /// </remarks>
+        /// <param name="controls">The array of qubits on which the operation is controlled.</param>
+        /// <param name="qubit1">First qubit to be swapped.</param>
+        /// <param name="qubit2">Second qubit to be swapped.</param>
+        void ControlledSWAP(IQArray<Qubit> controls, Qubit qubit1, Qubit qubit2);
+
+        /// <summary>
+        /// Called before a call to any Q# operation.
+        /// </summary>
+        /// <param name="operation">Information about operation being called.</param>
+        /// <param name="arguments">Information about the arguments passed to the operation.</param>
+        /// <remarks>
+        /// To get the fully qualified Q# name of operation being called use <see cref="ICallable.FullName"/>.
+        /// For the variant of operation, that is to find if Adjoint, Controlled or Controlled Adjoint being called use <see cref="ICallable.Variant"/>.
+        /// To get a sequence of all qubits passed to the operation use <see cref="IApplyData.Qubits"/>.
+        /// </remarks>
         void OnOperationStart(ICallable operation, IApplyData arguments);
+
+        /// <summary>
+        /// Called in the end of the call to any Q# operation.
+        /// </summary>
+        /// <param name="operation">Information about operation being called.</param>
+        /// <param name="arguments">Information about the arguments passed to the operation.</param>
+        /// <remarks>
+        /// To get the fully qualified Q# name of operation being called use <see cref="ICallable.FullName"/>.
+        /// For the variant of operation, that is to find if Adjoint, Controlled or Controlled Adjoint being called use <see cref="ICallable.Variant"/>.
+        /// To get a sequence of all qubits passed to the operation use <see cref="IApplyData.Qubits"/>.
+        /// </remarks>
         void OnOperationEnd(ICallable operation, IApplyData arguments);
+
 
         void ClassicallyControlled(Result measurementResult, Action onZero, Action onOne);
 
