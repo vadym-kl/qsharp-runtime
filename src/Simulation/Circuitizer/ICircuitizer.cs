@@ -418,7 +418,16 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// </remarks>
         void OnOperationEnd(ICallable operation, IApplyData arguments);
 
-
+        /// <summary>
+        /// Intended for limited support of branching upon measurement results on a simulator level.
+        /// </summary>
+        /// <param name="measurementResult">The result of the measurement upon which branching is to be performed.</param>
+        /// <param name="onZero">Corresponds to quantum program that must be executed if <paramref name="measurementResult"/> result is <see cref="ResultValue.Zero"/></param>
+        /// <param name="onOne">Corresponds to quantum program that must be executed if <paramref name="measurementResult"/> result is <see cref="ResultValue.One"/></param>
+        /// <remarks>
+        /// Calling <c>onZero()</c> will result in the execution of quantum program that Q# user intends to execute if <paramref name="measurementResult"/> result is <see cref="ResultValue.Zero"/>.
+        /// The program is executed with the same instance of <see cref="ICircuitizer"/> interface.
+        /// </remarks>
         void ClassicallyControlled(Result measurementResult, Action onZero, Action onOne);
 
         /// <summary>
