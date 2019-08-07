@@ -154,7 +154,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// In Q# the operation applies S gate to <paramref name="qubit"/>. The gate is given by matrix S=((1,0),(0,𝑖)).
         /// </summary>
         /// <remarks>
-        /// When adjoint of S is called in Q#, <see cref="SInv(Qubit)"/> is called.
+        /// When adjoint of S is called in Q#, <see cref="SAdj(Qubit)"/> is called.
         /// The names and the order of the parameters is the same as for the corresponding Q# operation.
         /// </remarks>
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
@@ -165,7 +165,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// In Q# the operation applies S gate to <paramref name="qubit"/> controlled on <paramref name="controls"/>. The gate is given by matrix S=((1,0),(0,𝑖)).
         /// </summary>
         /// <remarks>
-        /// When adjoint of Controlled S is called in Q#, <see cref="ControlledSInv(IQArray{Qubit}, Qubit)"/> is called.
+        /// When adjoint of Controlled S is called in Q#, <see cref="ControlledSAdj(IQArray{Qubit}, Qubit)"/> is called.
         /// The names and the order of the parameters is the same as for the corresponding Q# operation.
         /// </remarks>
         /// <param name="controls">The array of qubits on which the operation is controlled.</param>
@@ -181,7 +181,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// The names and the order of the parameters is the same as for the corresponding Q# operation.
         /// </remarks>
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
-        void SInv(Qubit qubit);
+        void SAdj(Qubit qubit);
 
         /// <summary>
         /// Called when controlled adjoint <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.s">Microsoft.Quantum.Intrinsic.S</a> is called in Q#.
@@ -193,14 +193,14 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// </remarks>
         /// <param name="controls">The array of qubits on which the operation is controlled.</param>
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
-        void ControlledSInv(IQArray<Qubit> controls, Qubit qubit);
+        void ControlledSAdj(IQArray<Qubit> controls, Qubit qubit);
 
         /// <summary>
         /// Called when <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.t">Microsoft.Quantum.Intrinsic.T</a> is called in Q#.
         /// In Q# the operation applies T gate to <paramref name="qubit"/>. The gate is given by matrix T=((1,0),(0,𝑒𝑥𝑝(𝑖⋅π/4))).
         /// </summary>
         /// <remarks>
-        /// When adjoint of T is called in Q#, <see cref="TInv(Qubit)"/> is called.
+        /// When adjoint of T is called in Q#, <see cref="TAdj(Qubit)"/> is called.
         /// The names and the order of the parameters is the same as for the corresponding Q# operation.
         /// </remarks>
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
@@ -211,7 +211,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// In Q# the operation applies T gate to <paramref name="qubit"/> controlled on <paramref name="controls"/>. The gate is given by matrix T=((1,0),(0,𝑒𝑥𝑝(𝑖⋅π/4))).
         /// </summary>
         /// <remarks>
-        /// When adjoint of Controlled T is called in Q#, <see cref="ControlledTsInv(IQArray{Qubit}, Qubit)"/> is called.
+        /// When adjoint of Controlled T is called in Q#, <see cref="ControlledTsAdj(IQArray{Qubit}, Qubit)"/> is called.
         /// The names and the order of the parameters is the same as for the corresponding Q# operation.
         /// </remarks>
         /// <param name="controls">The array of qubits on which the operation is controlled.</param>
@@ -227,7 +227,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// The names and the order of the parameters is the same as for the corresponding Q# operation.
         /// </remarks>
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
-        void TInv(Qubit qubit);
+        void TAdj(Qubit qubit);
 
         /// <summary>
         /// Called when controlled adjoint <a href="https://docs.microsoft.com/en-gb/qsharp/api/qsharp/microsoft.quantum.intrinsic.t">Microsoft.Quantum.Intrinsic.T</a> is called in Q#.
@@ -239,7 +239,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// </remarks>
         /// <param name="controls">The array of qubits on which the operation is controlled.</param>
         /// <param name="qubit">Qubit to which the gate should be applied.</param>
-        void ControlledTInv(IQArray<Qubit> controls, Qubit qubit);
+        void ControlledTAdj(IQArray<Qubit> controls, Qubit qubit);
 
         Result M(Qubit qubit);
         Result Measure(IQArray<Pauli> bases, IQArray<Qubit> qubits);
@@ -421,9 +421,44 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         void ClassicallyControlled(Result measurementResult, Action onZero, Action onOne);
 
+        /// <summary>
+        /// Called when qubits are allocated by Q# <a href="https://docs.microsoft.com/en-gb/quantum/language/statements#clean-qubits"><c>using</c></a> block. 
+        /// </summary>
+        /// <param name="qubits">Qubits that are allocated</param>.
+        /// <remarks>
+        /// Every qubit in simulation framework has a unique identifier <see cref="Qubit.Id"/>.
+        /// All newly allocated qubits are in |0⟩ state.
+        /// </remarks>
         void OnAllocateQubits(IQArray<Qubit> qubits);
+
+        /// <summary>
+        /// Called when qubits are released in Q# in the end of <a href="https://docs.microsoft.com/en-gb/quantum/language/statements#clean-qubits"><c>using</c></a> block. 
+        /// </summary>
+        /// <param name="qubits">Qubits that are released</param>.
+        /// <remarks>
+        /// Every qubit in simulation framework has a unique identifier <see cref="Qubit.Id"/>.
+        /// All qubits are expected to be released in |0⟩ state.
+        /// </remarks>
         void OnReleaseQubits(IQArray<Qubit> qubits);
+
+        /// <summary>
+        /// Called when qubits are borrowed by Q# <a href="https://docs.microsoft.com/en-gb/quantum/language/statements#dirty-qubits"><c>borrowing</c></a> block. 
+        /// </summary>
+        /// <param name="qubits">Qubits that are borrowed</param>.
+        /// <remarks>
+        /// Every qubit in simulation framework has a unique identifier <see cref="Qubit.Id"/>.
+        /// Borrowed qubits can be in any state.
+        /// </remarks>
         void OnBorrowQubits(IQArray<Qubit> qubits);
+
+        /// <summary>
+        /// Called when qubits are returned in the end of Q# <a href="https://docs.microsoft.com/en-gb/quantum/language/statements#dirty-qubits"><c>borrowing</c></a> block. 
+        /// </summary>
+        /// <param name="qubits">Qubits that has been allocated</param>.
+        /// <remarks>
+        /// Every qubit in simulation framework has a unique identifier <see cref="Qubit.Id"/>.
+        /// Borrowed qubits are expected to be returned in the same state as the state they have been borrowed in.
+        /// </remarks>
         void OnReturnQubits(IQArray<Qubit> qubits);
     }
 }
