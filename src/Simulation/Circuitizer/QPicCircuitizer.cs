@@ -82,6 +82,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void Reset(Qubit qubit)
         {
+            // TODO: discuss what is a good way of showing qubit reset
             /* No-Op. */
         }
 
