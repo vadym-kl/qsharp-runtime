@@ -9,8 +9,8 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
     /// It is intended to be used with ....
     /// </summary>
     /// <remarks>
-    /// Simulators implemented using <see cref="ICircuitizer"/> interface do not manage qubit allocation on their own.
-    /// Instead they are notified when qubits are allocated, released, borrowed
+    /// Simulators implemented using <see cref="ICircuitizer"/> interface do not manage qubits on their own.
+    /// Instead they are notified when qubits are allocated, released, borrowed and returned.
     /// </remarks>
     public interface ICircuitizer
     {
@@ -522,5 +522,29 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         /// Borrowed qubits are expected to be returned in the same state as the state they have been borrowed in.
         /// </remarks>
         void OnReturnQubits(IQArray<Qubit> qubits);
+
+        /// <summary>
+        /// Called when 
+        /// <a href="https://docs.microsoft.com/qsharp/api/qsharp/microsoft.quantum.diagnostics.dumpregister">Microsoft.Quantum.Diagnostics.DumpRegister</a>
+        /// or 
+        /// <a href="https://docs.microsoft.com/qsharp/api/qsharp/microsoft.quantum.diagnostics.dumpmachine">Microsoft.Quantum.Diagnostics.DumpMachine</a>
+        /// are called in Q#.
+        /// </summary>
+        /// <remarks>
+        /// The names and the order of the parameters are similar to corresponding Q# operations. 
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="location">Provides information on where to generate the state's DumpMachine was called.</param>
+        /// <param name="qubits">The list of qubits to report. If null, </param>
+        void OnDump<T>(T location, IQArray<Qubit> qubits = null);
+
+        /// <summary>
+        /// Called when <a href="https://docs.microsoft.com/qsharp/api/qsharp/microsoft.quantum.intrinsic.message">Microsoft.Quantum.Intrinsic.Message</a> is called in Q#.
+        /// </summary>
+        /// <remarks>
+        /// The names and the order of the parameters is the same as corresponding Q# operations. 
+        /// </remarks>
+        /// <param name="msg">The message to be reported.</param>
+        void OnMessage(string msg);
     }
 }
