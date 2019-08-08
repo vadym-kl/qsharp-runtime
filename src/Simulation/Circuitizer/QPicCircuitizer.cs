@@ -7,6 +7,24 @@ using System.Linq;
 
 namespace Microsoft.Quantum.Simulation.Circuitizer
 {
+    /// <summary>
+    /// Stores the id of the QPic classical wire where result was written in.
+    /// </summary>
+    class QPicResult : Result 
+    {
+        public int ClassicalWideId { private set; get; }
+
+        public QPicResult( int classicalWireId )
+        {
+            ClassicalWideId = classicalWireId;
+        }
+
+        public override ResultValue GetValue()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     class QPicCircuitizer : ICircuitizer
     {
         private StringBuilder _programText;
@@ -41,13 +59,18 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             /* No-Op. */
         }
 
-        public void ClassicallyControlled(Pauli pauli, Qubit target, Action onZero, Action onOne)
+        public void ClassicallyControlled( Result result, Action onZero, Action onOne)
         {
-            M(target, pauli);
-            _classicalControlContexts.Push((0, target.Id));
+            QPicResult res = result as QPicResult;
+            if( res == null )
+            {
+                throw new Exception("QPicCircuitizer expects result to be of type QPicResult");
+            }
+
+            _classicalControlContexts.Push((0, res.ClassicalWideId));
             onZero();
             _classicalControlContexts.Pop();
-            _classicalControlContexts.Push((1, target.Id));
+            _classicalControlContexts.Push((1, res.ClassicalWideId));
             onOne();
             _classicalControlContexts.Pop();
         }
@@ -182,23 +205,27 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public Result M(Qubit target)
         {
-            M(target, Pauli.PauliZ);
+            return Measure(new QArray<Pauli>(new[] { Pauli.PauliZ }), new QArray<Qubit>( new[] { target }));
         }
 
         public Result Measure(IQArray<Pauli> pauli, IQArray<Qubit> target)
         {
             UpdateLastUsedAsControls(target, null);
             // TODO: Need to create a classical wire from one of the gates in the joint measurement and store it for future evaluation.
+
+            int classicalWireId = 0; // TODO: add code for tracking allocated wires 
+
             var statement = "";
             for (var i = 0; i < pauli.Count; ++i)
             {
                 var p = GetPauliAxis(pauli[i]);
-
                 // Need to manually draw a "D" shape.
+                // TODO: add D shape drawing code as LaTeX macro into QPic preamble, see example in Teams discussion
                 var label = "G:op=\"\\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \\draw (0.000000, 0.000000) node {{\\scriptsize $" + p + "$}};\":sh=0 ";
                 statement += $"q{target[i].Id} {label} ";
             }
             AddStatement(statement);
+            return new QPicResult(classicalWireId);
         }
 
         public void OnAllocateQubits(IQArray<Qubit> qubits)
@@ -342,12 +369,12 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             AddStatement(statement);
         }
 
-        private Result M(Qubit target, Pauli pauli)
-        {
-            UpdateLastUsedAsControls(target, null);
-            var pauliName = GetPauliAxis(pauli);
-            AddStatement($"q{target.Id} M \\scriptsize{{${pauliName}$}}");
-        }
+        //private Result M(Qubit target, Pauli pauli)
+        //{
+        //    UpdateLastUsedAsControls(target, null);
+        //    var pauliName = GetPauliAxis(pauli);
+        //    AddStatement($"q{target.Id} M \\scriptsize{{${pauliName}$}}");
+        //}
 
         private void ExpWithAngleString(IQArray<Qubit> controls, IQArray<Pauli> pauli, string angle, IQArray<Qubit> target)
         {
@@ -478,6 +505,16 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             var idx = _programText.ToString().LastIndexOf(targetQubitName);
             _programText.Insert(idx + targetQubitName.Length, ":owire");
             _terminatedWires.Add(qubitId);
+        }
+
+        public void OnDump<T>(T location, IQArray<Qubit> qubits = null)
+        {
+            // No-Op
+        }
+
+        public void OnMessage(string msg)
+        {
+            AddStatement($"# {msg}"); // add message as a comment
         }
     }
 }
