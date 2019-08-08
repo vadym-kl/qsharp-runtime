@@ -6,7 +6,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
     /// <summary>
     /// An interface for implementing QDK target machines which work 
     /// on a quantum circuit level. 
-    /// It is intended to be used with ....
+    /// It is intended to be used with <see cref="CircuitizerSimulator"/>.
     /// </summary>
     /// <remarks>
     /// Simulators implemented using <see cref="ICircuitizer"/> interface do not manage qubits on their own.
