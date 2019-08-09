@@ -3,9 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Quantum.Simulation.Core;
-using Microsoft.Quantum.Simulation.Simulators;
+using math = System.Math;
 
-namespace SimulatorSkeleton
+namespace Microsoft.Quantum.Simulation.Circuitizer
 {
     public class CircuitizerResult : Result
     {
@@ -130,7 +130,7 @@ namespace SimulatorSkeleton
             }
         }
 
-        public void ControlledSInv(IQArray<Qubit> controls, Qubit target)
+        public void ControlledSAdj(IQArray<Qubit> controls, Qubit target)
         {
             foreach(var control in controls)
             {
@@ -154,7 +154,7 @@ namespace SimulatorSkeleton
             }
         }
 
-        public void ControlledTInv(IQArray<Qubit> controls, Qubit target)
+        public void ControlledTAdj(IQArray<Qubit> controls, Qubit target)
         {
             foreach(var control in controls)
             {
@@ -232,9 +232,9 @@ namespace SimulatorSkeleton
                     occupancy.Add(false);
                     released.Add(false);
                     collapsed.Add(false);
-                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? Math.Max(lines[0].Length - 7, 0): 0) + "     "));
-                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? Math.Max(lines[0].Length - 7, 0): 0) + "|0>──"));
-                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? Math.Max(lines[0].Length - 7, 0): 0) + "     "));
+                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "     "));
+                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "|0>──"));
+                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "     "));
                 }
                 else if(released[qubit.Id])
                 {
@@ -292,7 +292,7 @@ namespace SimulatorSkeleton
             AddGate("S", target.Id);
         }
 
-        public void SInv(Qubit target)
+        public void SAdj(Qubit target)
         {
             AddGate("Ƨ", target.Id);
         }
@@ -307,7 +307,7 @@ namespace SimulatorSkeleton
             AddGate("T", target.Id);
         }
 
-        public void TInv(Qubit target)
+        public void TAdj(Qubit target)
         {
             AddGate("┴", target.Id);
         }
@@ -394,8 +394,8 @@ namespace SimulatorSkeleton
             lines[(3 * targetId) + 1].Append("┤ "+ centeredString(gateName, 3) + " ├");
             lines[(3 * targetId) + 2].Append(controlId < targetId ? "└─────┘" : "└──┬──┘");
 
-            var min = Math.Min(controlId, targetId);
-            var max = Math.Max(controlId, targetId);
+            var min = math.Min(controlId, targetId);
+            var max = math.Max(controlId, targetId);
             DrawVerticalLine(min, max);
             NewColumn();
         }
@@ -442,8 +442,8 @@ namespace SimulatorSkeleton
 		    lines[(3 * q1Id) + 1].Append("───╳───");
 		    lines[(3 * q1Id) + 2].Append(q0Id < q1Id ? "       " : "   │   ");
 
-		    var min = Math.Min(q0Id, q1Id);
-		    var max = Math.Max(q0Id, q1Id);
+		    var min = math.Min(q0Id, q1Id);
+		    var max = math.Max(q0Id, q1Id);
             DrawVerticalLine(min, max);
 		    NewColumn();
         }
@@ -457,8 +457,8 @@ namespace SimulatorSkeleton
 		    occupancy[q1Id] = true;
             occupancy[controlId] = true;
 
-            var minQ = Math.Min(q0Id, q1Id);
-		    var maxQ = Math.Max(q0Id, q1Id);
+            var minQ = math.Min(q0Id, q1Id);
+		    var maxQ = math.Max(q0Id, q1Id);
 
             lines[(3 * controlId)].Append(controlId < minQ ? "       " : "   │   ");
             lines[(3 * controlId) + 1].Append("───@───");
@@ -526,6 +526,21 @@ namespace SimulatorSkeleton
             int rightPadding = width - s.Length - leftPadding;
 
             return new string(' ', leftPadding) + s + new string(' ', rightPadding);
+        }
+
+        public void Reset(Qubit qubit)
+        {
+            //TODO: discuss how to show qubit reset in a nice way
+        }
+
+        public void OnDump<T>(T location, IQArray<Qubit> qubits = null)
+        {
+            //TODO
+        }
+
+        public void OnMessage(string msg)
+        {
+            //TODO
         }
     }
 }
