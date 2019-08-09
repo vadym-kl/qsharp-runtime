@@ -4,6 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="AsciiCircuitizer.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Microsoft.Quantum.Simulation.Common.csproj" />
@@ -21,6 +24,10 @@
 
   <ItemGroup>
     <Folder Include="CircuitizerSimulator\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="AsciiCircuitizer.cs" />
   </ItemGroup>
 
   <Import Project="..\..\..\build\Props\QSharp.targets" />
