@@ -8,20 +8,32 @@ using System.Linq;
 namespace Microsoft.Quantum.Simulation.Circuitizer
 {
     /// <summary>
-    /// Stores the id of the QPic classical wire where result was written in.
+    /// Stores the ID of the QPic classical wire where result was written.
     /// </summary>
-    class QPicResult : Result 
+    class QPicResult : Result, IComparable
     {
-        public int ClassicalWideId { private set; get; }
+        private static int _currentClassicalWireId = 0;
 
-        public QPicResult( int classicalWireId )
+        public int ClassicalWireId { private set; get; }
+
+        public QPicResult()
         {
-            ClassicalWideId = classicalWireId;
+            ClassicalWireId = _currentClassicalWireId++;
         }
 
         public override ResultValue GetValue()
         {
-            throw new NotImplementedException();
+            // Not valid to call this.
+            return  ResultValue.Zero;
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (!(obj is QPicResult otherResult))
+            {
+                return 0;
+            }
+            return otherResult.ClassicalWireId - ClassicalWireId;
         }
     }
 
@@ -39,6 +51,8 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         private HashSet<int> _lastUsedAsControl;
 
+        private SortedSet<QPicResult> _results;
+
         public QPicCircuitizer()
         {
             var settings = $"WIREPAD {WirePadding}\n";
@@ -47,6 +61,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             _classicalControlContexts = new Stack<(int, int)>();
             _terminatedWires = new HashSet<int>();
             _lastUsedAsControl = new HashSet<int>();
+            _results = new SortedSet<QPicResult>();
         }
 
         public void Assert(IQArray<Pauli> pauli, IQArray<Qubit> target, Result result, string message)
@@ -59,18 +74,17 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             /* No-Op. */
         }
 
-        public void ClassicallyControlled( Result result, Action onZero, Action onOne)
+        public void ClassicallyControlled(Result result, Action onZero, Action onOne)
         {
-            QPicResult res = result as QPicResult;
-            if( res == null )
+            if(!(result is QPicResult qPicResult))
             {
-                throw new Exception("QPicCircuitizer expects result to be of type QPicResult");
+                throw new ArgumentException($"'{nameof(result)}' must be of type 'QPicResult'");
             }
 
-            _classicalControlContexts.Push((0, res.ClassicalWideId));
+            _classicalControlContexts.Push((0, qPicResult.ClassicalWireId));
             onZero();
             _classicalControlContexts.Pop();
-            _classicalControlContexts.Push((1, res.ClassicalWideId));
+            _classicalControlContexts.Push((1, qPicResult.ClassicalWireId));
             onOne();
             _classicalControlContexts.Pop();
         }
@@ -82,8 +96,8 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void Reset(Qubit qubit)
         {
-            // TODO: discuss what is a good way of showing qubit reset
-            /* No-Op. */
+            
+            WriteOperation("Reset", qubit);
         }
 
         public void OnOperationStart(ICallable operation, IApplyData arguments)
@@ -214,19 +228,18 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             UpdateLastUsedAsControls(target, null);
             // TODO: Need to create a classical wire from one of the gates in the joint measurement and store it for future evaluation.
 
-            int classicalWireId = 0; // TODO: add code for tracking allocated wires 
-
             var statement = "";
             for (var i = 0; i < pauli.Count; ++i)
             {
                 var p = GetPauliAxis(pauli[i]);
-                // Need to manually draw a "D" shape.
                 // TODO: add D shape drawing code as LaTeX macro into QPic preamble, see example in Teams discussion
                 var label = "G:op=\"\\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \\draw (0.000000, 0.000000) node {{\\scriptsize $" + p + "$}};\":sh=0 ";
                 statement += $"q{target[i].Id} {label} ";
             }
             AddStatement(statement);
-            return new QPicResult(classicalWireId);
+            var result = new QPicResult();
+            _results.Add(result);
+            return new QPicResult();
         }
 
         public void OnAllocateQubits(IQArray<Qubit> qubits)
@@ -338,7 +351,17 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             File.WriteAllText(filePath, _programText.ToString());
         }
 
-        private void AddStatement(string statement)
+        public void OnDump<T>(T location, IQArray<Qubit> qubits = null)
+        {
+            /* No-Op */
+        }
+
+        public void OnMessage(string msg)
+        {
+            AddStatement($"# {msg}");
+        }
+
+                private void AddStatement(string statement)
         {
             Console.WriteLine(statement);
             _programText.AppendLine(statement);
@@ -369,13 +392,6 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             statement += GetClassicalControlFragment();
             AddStatement(statement);
         }
-
-        //private Result M(Qubit target, Pauli pauli)
-        //{
-        //    UpdateLastUsedAsControls(target, null);
-        //    var pauliName = GetPauliAxis(pauli);
-        //    AddStatement($"q{target.Id} M \\scriptsize{{${pauliName}$}}");
-        //}
 
         private void ExpWithAngleString(IQArray<Qubit> controls, IQArray<Pauli> pauli, string angle, IQArray<Qubit> target)
         {
@@ -482,7 +498,6 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         private void UpdateLastUsedAsControls(IQArray<Qubit> targets, IQArray<Qubit> controls)
         {
-            //TODO can a qubit be in both lists? is that valid? If so, what takes priority?
             if (targets != null)
             {
                 foreach (var target in targets)
@@ -506,16 +521,6 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             var idx = _programText.ToString().LastIndexOf(targetQubitName);
             _programText.Insert(idx + targetQubitName.Length, ":owire");
             _terminatedWires.Add(qubitId);
-        }
-
-        public void OnDump<T>(T location, IQArray<Qubit> qubits = null)
-        {
-            // No-Op
-        }
-
-        public void OnMessage(string msg)
-        {
-            AddStatement($"# {msg}"); // add message as a comment
         }
     }
 }
