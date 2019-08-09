@@ -43,7 +43,7 @@
     <ProjectReference Include="$(EnlistmentRoot)src\Simulation\Common\Microsoft.Quantum.Simulation.Common.csproj" />
     <ProjectReference Include="$(EnlistmentRoot)src\Simulation\Core\Microsoft.Quantum.Simulation.Core.csproj" />
     <ProjectReference Include="$(EnlistmentRoot)src\Simulation\QCTraceSimulator\Microsoft.Quantum.Simulation.QCTraceSimulatorRuntime.csproj" />
-    <ProjectReference Include="$(EnlistmentRoot)src\Simulation\Circuitizer\Microsoft.Quantum.Simulation.Circuitizer.csproj" Condition=" '$([MSBuild]::NormalizePath($(EnlistmentRoot)src\Simulation\Circuitizer))' != '$(MSBuildProjectDirectory)' And '$([MSBuild]::NormalizePath($(EnlistmentRoot)src\Simulation\Simulators))' != '$(MSBuildProjectDirectory)'"  />
-    <ProjectReference Include="$(EnlistmentRoot)src\Simulation\Simulators\Microsoft.Quantum.Simulators.csproj" Condition=" '$([MSBuild]::NormalizePath($(EnlistmentRoot)src\Simulation\Simulators))' != '$(MSBuildProjectDirectory)'"  />
+    <ProjectReference Include="$(EnlistmentRoot)src\Simulation\Circuitizer\Microsoft.Quantum.Simulation.Circuitizer.csproj" Condition=" '$([MSBuild]::NormalizePath($(EnlistmentRoot)src\Simulation\Circuitizer))' != '$(MSBuildProjectDirectory)'"  />
+    <ProjectReference Include="$(EnlistmentRoot)src\Simulation\Simulators\Microsoft.Quantum.Simulators.csproj" Condition=" '$([MSBuild]::NormalizePath($(EnlistmentRoot)src\Simulation\Simulators))' != '$(MSBuildProjectDirectory)' And '$([MSBuild]::NormalizePath($(EnlistmentRoot)src\Simulation\Circuitizer))' != '$(MSBuildProjectDirectory)'"  />
   </ItemGroup>
 </Project>
