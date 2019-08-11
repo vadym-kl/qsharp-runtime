@@ -378,7 +378,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
                 controlIndex = qubitIdToIndexMap[control.Id];
                 occupancy[controlIndex] = true;
                 lines[(3 * controlIndex)].Append(controlIndex == min ? "       " : "   │   ");
-                lines[(3 * controlIndex) + 1].Append("───@───");
+                lines[(3 * controlIndex) + 1].Append("───●───");
                 lines[(3 * controlIndex) + 2].Append(controlIndex == max ? "       ": "   │   " );
             }
 
@@ -405,7 +405,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
                 controlIndex = qubitIdToIndexMap[control.Id];
                 occupancy[controlIndex] = true;
                 lines[(3 * controlIndex)].Append(controlIndex == min ? "       " : "   │   ");
-                lines[(3 * controlIndex) + 1].Append("───@───");
+                lines[(3 * controlIndex) + 1].Append("───●───");
                 lines[(3 * controlIndex) + 2].Append(controlIndex == max ? "       ": "   │   " );
             }
 
