@@ -56,13 +56,10 @@ namespace Circuitizer.Tests
         [Fact]
         public void TestControlledSwap()
         {
-
-        }
-
-        [Fact]
-        public void TestMultipleControls()
-        {
-
+            var circuitizer = new AsciiCircuitizer();
+            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
+            var res = CircuitizerTests.ControlledSwap.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.Open("output/ControlledSwap.txt", FileMode.Open), circuitizer);
         }
 
         [Fact]
