@@ -31,8 +31,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulato2 = new CircuitizerSimulator(circuitizer);
-            res = CircuitizerTests.ConnectedExp.Run(circuitizerSimulator2).Result;
-            Assert.Equal(File.Open("output/Ry.txt", FileMode.Open), circuitizer);
+            var res = CircuitizerTests.ConnectedExp.Run(circuitizerSimulator2).Result;
+            Assert.Equal(File.Open("output/Exp.txt", FileMode.Open), circuitizer);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Circuitizer.Tests
         [Fact]
         public void TestClassicallyControlled()
         {
-            
+
         }
     }
 }

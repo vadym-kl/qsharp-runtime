@@ -20,7 +20,7 @@ namespace CircuitTests {
     operation ConnectedExp() : Unit {
         using ((q1, q2, q3) = (Qubit(), Qubit(), Qubit()))
         {
-            Exp([PauliX, PauliY, PauliX], 45.0, [q1, q3, q2]);
+            Exp([PauliZ, PauliY, PauliX], 45.0, [q1, q2, q3]);
         }
     }
 
