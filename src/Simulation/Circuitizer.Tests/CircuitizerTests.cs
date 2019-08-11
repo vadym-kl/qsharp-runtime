@@ -12,12 +12,21 @@ namespace Circuitizer.Tests
         [Fact]
         public void TestOneGate()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
+            var circuitizer1 = new AsciiCircuitizer();
+            var circuitizerSimulato1 = new CircuitizerSimulator(circuitizer1);
 
-            CircuitizerTests.Z.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.Open("output/Z.txt", FileMode.Open), circuitizer);
+            // Single character gate
+            var res = CircuitizerTests.Z.Run(circuitizerSimulator1).Result;
+            Assert.Equal(File.Open("output/Z.txt", FileMode.Open), circuitizer1);
+
+            // multi character gate
+            var circuitizer2 = new AsciiCircuitizer();
+            var circuitizerSimulato2 = new CircuitizerSimulator(circuitizer2);
+            res = CircuitizerTests.RY.Run(circuitizerSimulator2).Result;
+            Assert.Equal(File.Open("output/ry.txt", FileMode.Open), circuitizer2);
         }
 
+        [Fact]
+        public void 
     }
 }
