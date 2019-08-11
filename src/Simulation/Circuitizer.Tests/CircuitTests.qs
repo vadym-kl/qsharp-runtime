@@ -45,8 +45,22 @@ namespace CircuitTests {
         }
     }
 
+    operation M() : Unit {
+        using (q1 = Qubit())
+        {
+            let m = M(q1);
+        }
+    }
+
+    operation Measure() : Unit {
+        using ((q1, q2, q3) = (Qubit(), Qubit(), Qubit()))
+        {
+            let m = Measure([PauliX, PauliY, PauliZ], [q1, q2, q3]);
+        }
+    }
+
     operation HelloWorldCircuit() : Unit {
-        using( (q1,q2, q3) = (Qubit(),Qubit(), Qubit())) 
+        using( (q1, q2, q3) = (Qubit(),Qubit(), Qubit())) 
         {
             H(q1);
             H(q2);

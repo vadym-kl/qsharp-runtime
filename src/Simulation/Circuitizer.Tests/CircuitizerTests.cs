@@ -65,15 +65,26 @@ namespace Circuitizer.Tests
         [Fact]
         public void TestMeasure()
         {
-            // single 
+            //single
+            var circuitizer1 = new AsciiCircuitizer();
+            var circuitizerSimulator1 = new CircuitizerSimulator(circuitizer1);
+            var res = CircuitizerTests.M.Run(circuitizerSimulator1).Result;
+            Assert.Equal(File.Open("output/M.txt", FileMode.Open), circuitizer1);
 
-            //multiple
+            // multiple
+            var circuitizer2 = new AsciiCircuitizer();
+            var circuitizerSimulator2 = new CircuitizerSimulator(circuitizer2);
+            res = CircuitizerTests.Measure.Run(circuitizerSimulator2).Result;
+            Assert.Equal(File.Open("output/Measure.txt", FileMode.Open), circuitizer2);
         }
 
         [Fact]
-        public void TestClassicallyControlled()
+        public void TestTeleport()
         {
-
+            var circuitizer = new AsciiCircuitizer();
+            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
+            var res = CircuitizerTests.TeleportCircuit.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.Open("output/Teleport.txt", FileMode.Open), circuitizer);
         }
 
         [Fact]

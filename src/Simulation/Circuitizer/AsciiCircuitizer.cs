@@ -337,6 +337,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
             AddClassicalBit(targetIndex);
             DrawVerticalClassicalLine(targetIndex, occupancy.Count);
+            DrawClassicControls(targetIndex);
             NewColumn();
         }
 
@@ -387,6 +388,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             lines[(3 * targetIndex) + 2].Append(targetIndex < max ? "└──┬──┘": "└─────┘");
 
             DrawVerticalLine(min, max);
+            DrawClassicControls(max);
             NewColumn();
         }
 
@@ -420,6 +422,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             }
             
             DrawVerticalLine(min, max);
+            DrawClassicControls(max);
             NewColumn();
         }
 
@@ -495,7 +498,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 		    var max = math.Max(controlIndex, math.Max(q0Index, q1Index));
 
             lines[(3 * controlIndex)].Append(controlIndex == min ? "       " : "   │   ");
-            lines[(3 * controlIndex) + 1].Append("───@───");
+            lines[(3 * controlIndex) + 1].Append("───●───");
             lines[(3 * controlIndex) + 2].Append(controlIndex == max ? "       " : "   │   ");
 
             // swap lines
@@ -516,6 +519,8 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         {
             if(classicControls.TryPeek(out Tuple<long, bool> control))
             {
+                // replace lower gate
+                lines[(3 * toIndex) + 2].Replace("─", "╥", lines[(3 * toIndex) + 2].Length - 4, 1);
                 int controlIndex = bitIdToIndexMap[(int)control.Item1];
                 occupancy[controlIndex] = true;
                 lines[(3 * controlIndex)].Append("   ║   " );
