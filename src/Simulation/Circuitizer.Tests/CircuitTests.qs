@@ -10,6 +10,20 @@ namespace CircuitTests {
         }
     }
 
+    operation RY() : Unit {
+        using (q1 = Qubit())
+        {
+            R(PauliY, 60.0, q1);
+        }
+    }
+
+    operation ConnectedExp() : Unit {
+        using ((q1, q2, q3) = (Qubit(), Qubit(), Qubit()))
+        {
+            Exp([PauliX, PauliY, PauliX], 45.0, [q1, q3, q2]);
+        }
+    }
+
     operation HelloWorldCircuit() : Unit {
         using( (q1,q2, q3) = (Qubit(),Qubit(), Qubit())) 
         {

@@ -23,10 +23,54 @@ namespace Circuitizer.Tests
             var circuitizer2 = new AsciiCircuitizer();
             var circuitizerSimulato2 = new CircuitizerSimulator(circuitizer2);
             res = CircuitizerTests.RY.Run(circuitizerSimulator2).Result;
-            Assert.Equal(File.Open("output/ry.txt", FileMode.Open), circuitizer2);
+            Assert.Equal(File.Open("output/Ry.txt", FileMode.Open), circuitizer2);
         }
 
         [Fact]
-        public void 
+        public void Connectedgates()
+        {
+            var circuitizer = new AsciiCircuitizer();
+            var circuitizerSimulato2 = new CircuitizerSimulator(circuitizer);
+            res = CircuitizerTests.ConnectedExp.Run(circuitizerSimulator2).Result;
+            Assert.Equal(File.Open("output/Ry.txt", FileMode.Open), circuitizer);
+        }
+
+        [Fact]
+        public void TestSwap()
+        {
+
+        }
+
+        [Fact]
+        public void TestSimpleControlled()
+        {
+
+        }
+
+        [Fact]
+        public void TestControlledSwap()
+        {
+
+        }
+
+        [Fact]
+        public void TestMultipleControls()
+        {
+
+        }
+
+        [Fact]
+        public void TestMeasure()
+        {
+            // single 
+
+            //multiple
+        }
+
+        [Fact]
+        public void TestClassicallyControlled()
+        {
+            
+        }
     }
 }
