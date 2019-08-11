@@ -24,6 +24,20 @@ namespace CircuitTests {
         }
     }
 
+    operation Swap() : Unit {
+        using ((q1, q2) = (Qubit(), Qubit()))
+        {
+            SWAP(q1, q2);
+        }
+    }
+
+    operation ControlledX() : Unit {
+        using ((q1, q2, q3) = (Qubit(), Qubit(), Qubit()))
+        {
+            Controlled X([q1, q3], q2);
+        }
+    }
+
     operation HelloWorldCircuit() : Unit {
         using( (q1,q2, q3) = (Qubit(),Qubit(), Qubit())) 
         {
