@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Quantum.Simulation.Core;
+using Microsoft.Quantum.Simulation.Simulators;
 using math = System.Math;
 
 namespace Microsoft.Quantum.Simulation.Circuitizer
@@ -42,6 +43,10 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         private readonly List<bool> released = new List<bool>();
         private readonly List<bool> collapsed = new List<bool>();
 
+        private readonly Dictionary<int, int> qubitIdToIndexMap = new Dictionary<int, int>();
+
+        private readonly Dictionary<int, int> bitIdToIndexMap = new Dictionary<int, int>();
+
         private readonly Stack<Tuple<Int64,bool>> classicControls = new Stack<Tuple<Int64,bool>>();
 
         private long currentClassicalWireId = -1;
@@ -68,74 +73,47 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void ControlledExp(IQArray<Qubit> controls, IQArray<Pauli> pauli, double angle, IQArray<Qubit> target)
         {
-            for(int i = 0; i < target.Length; i++)
-            {
-                AddGate("e" + GetPauliAxis(pauli[i]), controls[i].Id, target[i].Id);
-            }
+            AddControlledConnectedGate("e", controls, pauli, target);
         }
 
         public void ControlledExpFrac(IQArray<Qubit> controls, IQArray<Pauli> pauli, long numerator, long denominator, IQArray<Qubit> target)
         {
-            for(int i = 0; i < target.Length; i++)
-            {
-                AddGate("e" + GetPauliAxis(pauli[i]), controls[i].Id, target[i].Id);
-            }
+            AddControlledConnectedGate("e", controls, pauli, target);
         }
 
         public void ControlledH(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("H", control.Id, target.Id);
-            }
+            AddGate("H", controls, target);
         }
 
         public void ControlledR(IQArray<Qubit> controls, Pauli axis, double angle, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("R"+GetPauliAxis(axis), control.Id, target.Id);
-            }
+            AddGate("R"+GetPauliAxis(axis), controls, target);
         }
 
         public void ControlledR1(IQArray<Qubit> controls, double angle, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("Rz", control.Id, target.Id);
-            }
+            AddGate("Rz", controls, target);
         }
 
         public void ControlledR1Frac(IQArray<Qubit> controls, long numerator, long denominator, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("Rz", control.Id, target.Id);
-            }
+            AddGate("Rz", controls, target);
         }
 
         public void ControlledRFrac(IQArray<Qubit> controls, Pauli axis, long numerator, long denominator, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("R"+GetPauliAxis(axis), control.Id, target.Id);
-            }
+            AddGate("R"+GetPauliAxis(axis), controls, target);
         }
 
         public void ControlledS(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("S", control.Id, target.Id);
-            }
+            AddGate("S", controls, target);
         }
 
         public void ControlledSAdj(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("Ƨ", control.Id, target.Id);
-            }
+            AddGate("Ƨ", controls, target);
         }
 
         public void ControlledSWAP(IQArray<Qubit> controls, Qubit q1, Qubit q2)
@@ -148,42 +126,27 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void ControlledT(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("T", control.Id, target.Id);
-            }
+            AddGate("T", controls, target);
         }
 
         public void ControlledTAdj(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("┴", control.Id, target.Id);
-            }
+            AddGate("┴", controls, target);
         }
 
         public void ControlledX(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("X", control.Id, target.Id);
-            }
+            AddGate("X", controls, target);
         }
 
         public void ControlledY(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("Y", control.Id, target.Id);
-            }
+            AddGate("Y", controls, target);
         }
 
         public void ControlledZ(IQArray<Qubit> controls, Qubit target)
         {
-            foreach(var control in controls)
-            {
-                AddGate("Z", control.Id, target.Id);
-            }
+            AddGate("Z", controls, target);
         }
 
         public void Exp(IQArray<Pauli> pauli, double angle, IQArray<Qubit> target)
@@ -204,9 +167,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         public Result M(Qubit target)
         {
             currentClassicalWireId++;
-            // TODO: draw mesurement result being written into classical wire
-            AddGate("Mz", target.Id);
-            // collapsed[target.Id] = true;
+            AddMeasureGate(target.Id);
             return new CircuitizerResult(currentClassicalWireId, target);
         }
 
@@ -214,11 +175,6 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         {
             currentClassicalWireId++;
             AddConnectedGate("M", pauli, target);
-            // TODO: draw mesurement result being written into classical wire with id = currentClassicalWireId
-            //foreach (var qubit in target)
-            //{
-            //    collapsed[qubit.Id] = true;
-            //}
             return new CircuitizerResult(currentClassicalWireId, target, pauli);
         }
 
@@ -226,25 +182,27 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         {
             foreach(var qubit in qubits)
             {
-                if(qubit.Id >= lines.Count/3)
+                var originalLinesCount = lines.Count;
+                if(qubit.Id >= originalLinesCount/3)
                 {
-                    // add spaces upto lines[0].Length - 7
+                    // map since classical bits may be added in between
+                    qubitIdToIndexMap[qubit.Id] = occupancy.Count;
                     occupancy.Add(false);
                     released.Add(false);
                     collapsed.Add(false);
-                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "     "));
-                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "|0>──"));
-                    lines.Add(new StringBuilder(new string(' ', lines.Count > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "     "));
+                    lines.Add(new StringBuilder(new string(' ', originalLinesCount > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "       "));
+                    lines.Add(new StringBuilder(new string(' ', originalLinesCount > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "|0>────"));
+                    lines.Add(new StringBuilder(new string(' ', originalLinesCount > 0 ? math.Max(lines[0].Length - 7, 0): 0) + "       "));
                 }
                 else if(released[qubit.Id])
                 {
                     // reinitialize
-                    released[qubit.Id] = false;
-                    occupancy[qubit.Id] = false;
-                    collapsed[qubit.Id] = false;
-                    lines[(3 * qubit.Id)].Append("     ");
-                    lines[(3 * qubit.Id) + 1].Append("|0>──");
-                    lines[(3 * qubit.Id) + 2].Append("     ");
+                    NewColumn();
+                    int qubitIndex = qubitIdToIndexMap[qubit.Id];
+                    released[qubitIndex] = false;
+                    occupancy[qubitIndex] = false;
+                    collapsed[qubitIndex] = false;
+                    lines[(3 * qubitIndex) + 1].Replace("       ", "|0>────", lines[3*qubitIndex].Length -7, 7);
                 }
             }
         }
@@ -258,10 +216,11 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         public void OnReleaseQubits(IQArray<Qubit> qubits)
         {
             foreach(var qubit in qubits){
-                lines[3 * qubit.Id].Append("     ");
-                lines[3 * qubit.Id + 1].Append("──<0|");
-                lines[3 * qubit.Id + 2].Append("     ");
+                lines[3 * qubit.Id].Append("       ");
+                lines[3 * qubit.Id + 1].Append("────<0|");
+                lines[3 * qubit.Id + 2].Append("       ");
                 released[qubit.Id] =  true;
+                occupancy[qubit.Id] = true;
             }
         }
 
@@ -337,33 +296,59 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             return sb.ToString();
         }
 
+        private void AddClassicalBit(int measuredId)
+        {
+            bitIdToIndexMap[(int)currentClassicalWireId] = occupancy.Count;
+            occupancy.Add(true);
+            released.Add(false);
+            collapsed.Add(true);
+            lines.Add(new StringBuilder(new string(' ', lines[3* measuredId].Length - 7) + "   ║   "));
+            lines.Add(new StringBuilder(new string(' ', lines[3* measuredId].Length - 7) + "   ╚═══"));
+            lines.Add(new StringBuilder(new string(' ', lines[3* measuredId].Length - 7) + "       "));
+        }
+
         private void AddGate(string gateName, int targetId){
-            if (occupancy[targetId]) {
+            int targetIndex = qubitIdToIndexMap[targetId];
+            if (occupancy[targetIndex]) {
 			    NewColumn();
 		    }
-            occupancy[targetId] = true;
+            occupancy[targetIndex] = true;
 
-            lines[(3 * targetId)].Append("┌─────┐");
-            lines[(3 * targetId) + 1].Append("┤ " + centeredString(gateName, 3) + " ├");
-            lines[(3 * targetId) + 2].Append("└─────┘");       
+            lines[(3 * targetIndex)].Append("┌─────┐");
+            lines[(3 * targetIndex) + 1].Append("┤ " + centeredString(gateName, 3) + " ├");
+            lines[(3 * targetIndex) + 2].Append("└─────┘");
+
+            DrawClassicControls(targetIndex);
+            NewColumn();   
+        }
+
+        private void AddMeasureGate(int targetId)
+        {
+            int targetIndex = qubitIdToIndexMap[targetId];
+            if(!isLastColumnEmpty())
+            {
+                NewColumn();
+            }
+
+            occupancy[targetIndex] = true;
+            lines[(3 * targetIndex)].Append("┌─────┐");
+            lines[(3 * targetIndex) + 1].Append("┤ " + centeredString("Mz", 3) + " ├");
+            lines[(3 * targetIndex) + 2].Append("└──╥──┘");
+
+            AddClassicalBit(targetIndex);
+            DrawVerticalClassicalLine(targetIndex, occupancy.Count);
+            NewColumn();
         }
 
         private void NewColumn(){
             for(int i = 0;i < occupancy.Count; i++)
             {
-                if(released[i])
+                if(!occupancy[i])
                 {
                     lines[(3 * i)].Append("       ");
-				    lines[(3 * i) + 1].Append("       ");
+				    lines[(3 * i) + 1].Append(released[i] ? "       " : collapsed[i] ? "═══════" : "───────");
 				    lines[(3 * i) + 2].Append("       ");
-                }
-                else if(!occupancy[i])
-                {
-                    lines[(3 * i)].Append("       ");
-				    lines[(3 * i) + 1].Append(collapsed[i] ? "═══════" : "───────");
-				    lines[(3 * i) + 2].Append("       ");
-                }
-                
+                }              
                 occupancy[i] = false;
             }
         }
@@ -378,24 +363,62 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 		    return true;
         }
         
-        private void AddGate(string gateName, int controlId, int targetId)
+        private void AddGate(string gateName, IQArray<Qubit> controls, Qubit target)
         {
             if (!isLastColumnEmpty()) {
                 NewColumn();
             }
-            occupancy[controlId] = true;
-            occupancy[targetId] = true;
+            int targetIndex = qubitIdToIndexMap[target.Id];
+            occupancy[targetIndex] = true;
+            var min = math.Min(controls.Min(q => qubitIdToIndexMap[q.Id]), targetIndex);
+            var max = math.Max(controls.Max(q => qubitIdToIndexMap[q.Id]), target.Id);
+            int controlIndex = 0;
+            foreach(var control in controls)
+            {
+                controlIndex = qubitIdToIndexMap[control.Id];
+                occupancy[controlIndex] = true;
+                lines[(3 * controlIndex)].Append(controlIndex == min ? "       " : "   │   ");
+                lines[(3 * controlIndex) + 1].Append("───@───");
+                lines[(3 * controlIndex) + 2].Append(controlIndex == max ? "       ": "   │   " );
+            }
 
-            lines[(3 * controlId)].Append(controlId < targetId ? "       " : "   │   ");
-            lines[(3 * controlId) + 1].Append("───●───");
-            lines[(3 * controlId) + 2].Append(controlId < targetId ? "   │   " : "       ");
+            lines[(3 * targetIndex)].Append(targetIndex > min ? "┌──┴──┐" : "┌─────┐");
+            lines[(3 * targetIndex) + 1].Append("┤ "+ centeredString(gateName, 3) + " ├");
+            lines[(3 * targetIndex) + 2].Append(targetIndex < max ? "└──┬──┘": "└─────┘");
 
-            lines[(3 * targetId)].Append(controlId < targetId ? "┌──┴──┐" : "┌─────┐");
-            lines[(3 * targetId) + 1].Append("┤ "+ centeredString(gateName, 3) + " ├");
-            lines[(3 * targetId) + 2].Append(controlId < targetId ? "└─────┘" : "└──┬──┘");
+            DrawVerticalLine(min, max);
+            NewColumn();
+        }
 
-            var min = math.Min(controlId, targetId);
-            var max = math.Max(controlId, targetId);
+        private void AddControlledConnectedGate(string gateName, IQArray<Qubit> controls, IQArray<Pauli> Pauli, IQArray<Qubit> target)
+        {
+            if (!isLastColumnEmpty()) {
+                NewColumn();
+            }
+
+            var min = math.Min(controls.Min(q => qubitIdToIndexMap[q.Id]), target.Min(q => qubitIdToIndexMap[q.Id]));
+            var max = math.Max(controls.Max(q => qubitIdToIndexMap[q.Id]), target.Max(q => qubitIdToIndexMap[q.Id]));
+
+            int controlIndex = 0;
+            foreach(var control in controls)
+            {
+                controlIndex = qubitIdToIndexMap[control.Id];
+                occupancy[controlIndex] = true;
+                lines[(3 * controlIndex)].Append(controlIndex == min ? "       " : "   │   ");
+                lines[(3 * controlIndex) + 1].Append("───@───");
+                lines[(3 * controlIndex) + 2].Append(controlIndex == max ? "       ": "   │   " );
+            }
+
+            int targetIndex = 0;
+            for(int i = 0; i< target.Length; i++)
+            {
+                targetIndex = qubitIdToIndexMap[target[i].Id];
+                occupancy[targetIndex] = true;
+                lines[(3 * targetIndex)].Append(targetIndex > min ? "┌──┴──┐" : "┌─────┐");
+                lines[(3 * targetIndex) + 1].Append("┤ "+ centeredString(gateName + GetPauliAxis(Pauli[i]), 3) + " ├");
+                lines[(3 * targetIndex) + 2].Append(targetIndex < max ? "└──┬──┘" : "└─────┘");
+            }
+            
             DrawVerticalLine(min, max);
             NewColumn();
         }
@@ -406,23 +429,26 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
                 NewColumn();
             }
 
-            var min = target.Min(q => q.Id);
-            var max = target.Max(q => q.Id);
+            var min = target.Min(q => qubitIdToIndexMap[q.Id]);
+            var max = target.Max(q => qubitIdToIndexMap[q.Id]);
 
+            int targetIndex = 0;
             for(int i = 0; i< target.Length; i++)
             {
-                var qubit = target[i];
-                occupancy[qubit.Id] = true;
-                lines[(3 * qubit.Id)].Append(qubit.Id > min ? "┌──┴──┐" : "┌─────┐");
-                lines[(3 * qubit.Id) + 1].Append("┤ "+ centeredString(gateName + GetPauliAxis(Pauli[i]), 3) + " ├");
-                lines[(3 * qubit.Id) + 2].Append(qubit.Id < max ? "└──┬──┘" : "└─────┘");
+                targetIndex = qubitIdToIndexMap[target[i].Id];
+                occupancy[targetIndex] = true;
+                lines[(3 * targetIndex)].Append(targetIndex > min ? "┌──┴──┐" : "┌─────┐");
+                lines[(3 * targetIndex) + 1].Append("┤ "+ centeredString(gateName + GetPauliAxis(Pauli[i]), 3) + " ├");
+                lines[(3 * targetIndex) + 2].Append(targetIndex < max ? "└──┬──┘" : (gateName.StartsWith("M") ? "└──╥──┘" : "└─────┘"));
             }
             
-            var ordered = target.Select(q => q.Id).OrderBy(id => id).ToArray();
-            for (int i = 0; i< ordered.Length -1; i++)
+            DrawVerticalLine(min, max);
+            if(gateName.StartsWith("M"))
             {
-                DrawVerticalLine(ordered[i], ordered[i+1]);
-            }          
+                AddClassicalBit(max);
+                DrawVerticalClassicalLine(max, occupancy.Count);
+            }
+            DrawClassicControls(max);
             NewColumn();
         }
 
@@ -431,20 +457,24 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             if (!isLastColumnEmpty()) {
 			    NewColumn();
 		    }
-		    occupancy[q0Id] = true;
-		    occupancy[q1Id] = true;
+            int q0Index = qubitIdToIndexMap[q0Id];
+            int q1Index = qubitIdToIndexMap[q1Id];
 
-		    lines[(3 * q0Id)].Append(q0Id < q1Id ? "       " : "   │   ");
-		    lines[(3 * q0Id) + 1].Append("───╳───");
-		    lines[(3 * q0Id) + 2].Append(q0Id < q1Id ? "   │   " : "       ");
+		    occupancy[q0Index] = true;
+		    occupancy[q1Index] = true;
 
-		    lines[(3 * q1Id)].Append(q0Id < q1Id ? "   │   " : "       ");
-		    lines[(3 * q1Id) + 1].Append("───╳───");
-		    lines[(3 * q1Id) + 2].Append(q0Id < q1Id ? "       " : "   │   ");
+		    lines[(3 * q0Index)].Append(q0Index < q1Index ? "       " : "   │   ");
+		    lines[(3 * q0Index) + 1].Append("───╳───");
+		    lines[(3 * q0Index) + 2].Append(q0Index < q1Index ? "   │   " : "       ");
 
-		    var min = math.Min(q0Id, q1Id);
-		    var max = math.Max(q0Id, q1Id);
+		    lines[(3 * q1Index)].Append(q0Index < q1Index ? "   │   " : "       ");
+		    lines[(3 * q1Index) + 1].Append("───╳───");
+		    lines[(3 * q1Index) + 2].Append(q0Index < q1Index ? "       " : "   │   ");
+
+		    var min = math.Min(q0Index, q1Index);
+		    var max = math.Max(q0Index, q1Index);
             DrawVerticalLine(min, max);
+            DrawClassicControls(max);
 		    NewColumn();
         }
 
@@ -453,50 +483,74 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             if (!isLastColumnEmpty()) {
 			    NewColumn();
 		    }
-		    occupancy[q0Id] = true;
-		    occupancy[q1Id] = true;
-            occupancy[controlId] = true;
 
-            var minQ = math.Min(q0Id, q1Id);
-		    var maxQ = math.Max(q0Id, q1Id);
+            int q0Index = qubitIdToIndexMap[q0Id];
+            int q1Index = qubitIdToIndexMap[q1Id];
+            int controlIndex = qubitIdToIndexMap[controlId];
+		    occupancy[q0Index] = true;
+		    occupancy[q1Index] = true;
+            occupancy[controlIndex] = true;
 
-            lines[(3 * controlId)].Append(controlId < minQ ? "       " : "   │   ");
-            lines[(3 * controlId) + 1].Append("───●───");
-            lines[(3 * controlId) + 2].Append(controlId < maxQ ? "   │   " : "       ");
+            var min = math.Min(controlIndex, math.Min(q0Index, q1Index));
+		    var max = math.Max(controlIndex, math.Max(q0Index, q1Index));
+
+            lines[(3 * controlIndex)].Append(controlIndex == min ? "       " : "   │   ");
+            lines[(3 * controlIndex) + 1].Append("───@───");
+            lines[(3 * controlIndex) + 2].Append(controlIndex == max ? "       " : "   │   ");
 
             // swap lines
-		    lines[(3 * q0Id)].Append(q0Id < q1Id ? "       " : "   │   ");
-		    lines[(3 * q0Id) + 1].Append("───╳───");
-		    lines[(3 * q0Id) + 2].Append(q0Id < q1Id ? "   │   " : "       ");
+		    lines[(3 * q0Index)].Append(q0Index == min ? "       " : "   │   ");
+		    lines[(3 * q0Index) + 1].Append("───╳───");
+		    lines[(3 * q0Index) + 2].Append(q0Index == max ? "       " : "   │   ");
 
-		    lines[(3 * q1Id)].Append(q0Id < q1Id ? "   │   " : "       ");
-		    lines[(3 * q1Id) + 1].Append("───╳───");
-		    lines[(3 * q1Id) + 2].Append(q0Id < q1Id ? "       " : "   │   ");
+		    lines[(3 * q1Index)].Append(q1Index == min ? "       " : "   │   ");
+		    lines[(3 * q1Index) + 1].Append("───╳───");
+		    lines[(3 * q1Index) + 2].Append(q1Index == max ? "       " : "   │   ");
 
-            // DrawVerticalLine(minQ, maxQ);
-
-            // control lines
-            if(controlId > maxQ)
-            {
-                DrawVerticalLine(maxQ, controlId);
-                lines[(3 * maxQ) + 2].Replace(' ', '│', lines[(3 * maxQ) + 2].Length - 4, 1);
-            }
-            else if(controlId < minQ)
-            {
-                DrawVerticalLine(controlId, minQ);
-                lines[(3 * minQ)].Replace(' ', '│', lines[(3 * minQ)].Length - 4, 1);
-            }
-            
+            DrawVerticalLine(min, max);
+            DrawClassicControls(max);          
 		    NewColumn();
+        }
+
+        private void DrawClassicControls(int toIndex)
+        {
+            if(classicControls.TryPeek(out Tuple<long, bool> control))
+            {
+                int controlIndex = bitIdToIndexMap[(int)control.Item1];
+                occupancy[controlIndex] = true;
+                lines[(3 * controlIndex)].Append("   ║   " );
+                lines[(3 * controlIndex) + 1].Append(control.Item2 ? "═══●═══" : "═══○═══");
+                lines[(3 * controlIndex) + 2].Append("       " );
+
+                DrawVerticalClassicalLine(toIndex, controlIndex);
+            }
         }
 
         private void DrawVerticalLine(int min, int max)
         {
-            for (int i = min + 1; i < max; ++i) {
-                occupancy[i] = true;
-                lines[(3 * i)].Append("   │   ");
-                lines[(3 * i) + 1].Append("───┼───");
-                lines[(3 * i) + 2].Append("   │   ");
+            for (int i = min; i < max; ++i) 
+            {
+                if (!occupancy[i])
+                {
+                    occupancy[i] = true;
+                    lines[(3 * i)].Append("   │   ");
+                    lines[(3 * i) + 1].Append(collapsed[i] ? "═══╪═══" : released[i] ? "   │   " : "───┼───");
+                    lines[(3 * i) + 2].Append("   │   ");
+                }                
+            }
+        }
+
+        private void DrawVerticalClassicalLine(int min, int max)
+        {
+            for (int i = min; i < max; ++i) 
+            {
+                if (!occupancy[i])
+                {
+                    occupancy[i] = true;
+                    lines[(3 * i)].Append("   ║   ");
+                    lines[(3 * i) + 1].Append(collapsed[i] ? "═══╬═══" : (released[i] ? "   ║   " : "───╫───"));
+                    lines[(3 * i) + 2].Append("   ║   ");
+                }               
             }
         }
 
