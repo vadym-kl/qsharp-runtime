@@ -387,7 +387,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             occupancy[targetId] = true;
 
             lines[(3 * controlId)].Append(controlId < targetId ? "       " : "   │   ");
-            lines[(3 * controlId) + 1].Append("───@───");
+            lines[(3 * controlId) + 1].Append("───●───");
             lines[(3 * controlId) + 2].Append(controlId < targetId ? "   │   " : "       ");
 
             lines[(3 * targetId)].Append(controlId < targetId ? "┌──┴──┐" : "┌─────┐");
@@ -461,7 +461,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 		    var maxQ = math.Max(q0Id, q1Id);
 
             lines[(3 * controlId)].Append(controlId < minQ ? "       " : "   │   ");
-            lines[(3 * controlId) + 1].Append("───@───");
+            lines[(3 * controlId) + 1].Append("───●───");
             lines[(3 * controlId) + 2].Append(controlId < maxQ ? "   │   " : "       ");
 
             // swap lines
