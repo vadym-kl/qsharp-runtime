@@ -58,8 +58,8 @@ namespace CircuitTests {
             let m = Measure([PauliX, PauliY, PauliZ], [q1, q2, q3]);
         }
     }
-
-    operation HelloWorldCircuit() : Unit {
+    
+    operation IntergrateCircuit() : Unit {
         using( (q1, q2, q3) = (Qubit(),Qubit(), Qubit())) 
         {
             H(q1);
@@ -80,21 +80,15 @@ namespace CircuitTests {
             
             let r = M(q1);
             ApplyIfOne(r, (Adjoint T, q2));
-            //if(M(q1)== One)
-            //{
-            //	Adjoint T(q2);
-            //}
             
-
-
             using ( q = Qubit() ) {
                 Controlled Z([q1,q2], q);
             }
 
-
             Adjoint T(q2);
             R(PauliY, 60.0, q2);
-            let m2 = Measure([PauliX], [q2]);
+            let m2 = Measure([PauliX, PauliY], [q2, q3]);
+            ApplyIfZero(m2, (R, (PauliY, 60.0, q1)));
         }
     }
 

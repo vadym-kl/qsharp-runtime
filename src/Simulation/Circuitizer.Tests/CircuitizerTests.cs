@@ -88,9 +88,12 @@ namespace Circuitizer.Tests
         }
 
         [Fact]
-        public void MultipleGates()
+        public void TestIntergration()
         {
-            // hello world circuit
+            var circuitizer = new AsciiCircuitizer();
+            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
+            var res = CircuitizerTests.IntergrateCircuit.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.Open("output/Intergration.txt", FileMode.Open), circuitizer);
         }
     }
 }
