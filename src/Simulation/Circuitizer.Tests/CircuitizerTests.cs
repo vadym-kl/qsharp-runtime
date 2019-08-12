@@ -1,9 +1,8 @@
 using System;
 using System.IO;
 using Microsoft.Quantum.Simulation.Circuitizer;
-using Microsoft.Quantum.Simulation.Core;
-using Microsoft.Quantum.Simulation.Simulators;
 using Xunit;
+using Circuitizer.Tests.Extensions;
 
 namespace Circuitizer.Tests
 {
@@ -14,15 +13,15 @@ namespace Circuitizer.Tests
         {
             // Single character gate
             var circuitizer1 = new AsciiCircuitizer();
-            var circuitizerSimulato1 = new CircuitizerSimulator(circuitizer1);
-            var res = CircuitizerTests.Z.Run(circuitizerSimulator1).Result;
-            Assert.Equal(File.ReadAllText("output/Z.txt"), circuitizer1);
+            var circuitizerSimulator1 = new CircuitizerSimulator(circuitizer1);
+            var res = ZTest.Run(circuitizerSimulator1).Result;
+            Assert.Equal(File.ReadAllText("output/Z.txt"), circuitizer1.ToString());
 
             // multi character gate
             var circuitizer2 = new AsciiCircuitizer();
             var circuitizerSimulator2 = new CircuitizerSimulator(circuitizer2);
-            res = CircuitizerTests.RY.Run(circuitizerSimulator2).Result;
-            Assert.Equal(File.ReadAllText("output/Ry.txt"), circuitizer2);
+            res = RyTest.Run(circuitizerSimulator2).Result;
+            Assert.Equal(File.ReadAllText("output/Ry.txt"), circuitizer2.ToString());
         }
 
         [Fact]
@@ -30,8 +29,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = CircuitizerTests.ConnectedExp.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.ReadAllText("output/Exp.txt"), circuitizer);
+            var res = ConnectedExpTest.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.ReadAllText("output/Exp.txt"), circuitizer.ToString());
         }
 
         [Fact]
@@ -39,8 +38,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = CircuitizerTests.Swap.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.ReadAllText("output/Swap.txt"), circuitizer);
+            var res = SwapTest.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.ReadAllText("output/Swap.txt"), circuitizer.ToString());
         }
 
         [Fact]
@@ -48,8 +47,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = CircuitizerTests.ControlledX.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.ReadAllText("output/ControlledX.txt"), circuitizer);
+            var res = ControlledXTest.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.ReadAllText("output/ControlledX.txt"), circuitizer.ToString());
         }
 
         [Fact]
@@ -57,8 +56,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = CircuitizerTests.ControlledSwap.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.ReadAllText("output/ControlledSwap.txt"), circuitizer);
+            var res = ControlledSwapTest.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.ReadAllText("output/ControlledSwap.txt"), circuitizer.ToString());
         }
 
         [Fact]
@@ -67,14 +66,14 @@ namespace Circuitizer.Tests
             //single
             var circuitizer1 = new AsciiCircuitizer();
             var circuitizerSimulator1 = new CircuitizerSimulator(circuitizer1);
-            var res = CircuitizerTests.M.Run(circuitizerSimulator1).Result;
-            Assert.Equal(File.ReadAllText("output/M.txt"), circuitizer1);
+            var res = MTest.Run(circuitizerSimulator1).Result;
+            Assert.Equal(File.ReadAllText("output/M.txt"), circuitizer1.ToString());
 
             // multiple
             var circuitizer2 = new AsciiCircuitizer();
             var circuitizerSimulator2 = new CircuitizerSimulator(circuitizer2);
-            res = CircuitizerTests.Measure.Run(circuitizerSimulator2).Result;
-            Assert.Equal(File.ReadAllText("output/Measure.txt"), circuitizer2);
+            res = MeasureTest.Run(circuitizerSimulator2).Result;
+            Assert.Equal(File.ReadAllText("output/Measure.txt"), circuitizer2.ToString());
         }
 
         [Fact]
@@ -82,8 +81,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = CircuitizerTests.TeleportCircuit.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.ReadAllText("output/Teleport.txt"), circuitizer);
+            var res = TeleportCircuitTest.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.ReadAllText("output/Teleport.txt"), circuitizer.ToString());
         }
 
         [Fact]
@@ -91,8 +90,8 @@ namespace Circuitizer.Tests
         {
             var circuitizer = new AsciiCircuitizer();
             var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = CircuitizerTests.IntergrateCircuit.Run(circuitizerSimulator).Result;
-            Assert.Equal(File.ReadAllText("output/Intergration.txt"), circuitizer);
+            var res = IntegrateCircuitTest.Run(circuitizerSimulator).Result;
+            Assert.Equal(File.ReadAllText("output/Intergration.txt"), circuitizer.ToString());
         }
     }
 }

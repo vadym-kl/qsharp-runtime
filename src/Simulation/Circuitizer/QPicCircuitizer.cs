@@ -37,7 +37,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         }
     }
 
-    class QPicCircuitizer : ICircuitizer
+    public class QPicCircuitizer : ICircuitizer
     {
         private StringBuilder _programText;
 

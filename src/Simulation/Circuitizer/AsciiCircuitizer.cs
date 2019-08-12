@@ -34,7 +34,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         }
     }
 
-    public class ASCIICircuitizer : ICircuitizer
+    public class AsciiCircuitizer : ICircuitizer
     {
         // TODO: make sure that all gate drawing functions pay attention to classicControls array when drawing
 
@@ -517,7 +517,8 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         private void DrawClassicControls(int toIndex)
         {
-            if(classicControls.TryPeek(out Tuple<long, bool> control))
+            var control = classicControls.Any() ?  classicControls.Peek() : null;
+            if(control != null)
             {
                 // replace lower gate
                 lines[(3 * toIndex) + 2].Replace("─", "╥", lines[(3 * toIndex) + 2].Length - 4, 1);
