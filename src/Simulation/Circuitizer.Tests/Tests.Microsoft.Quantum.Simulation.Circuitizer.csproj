@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\..\build\Props\QSharp.Dev.props" />
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +16,7 @@
     <ProjectReference Include="..\Simulators\Microsoft.Quantum.Simulators.csproj" />
   </ItemGroup>
 
+
   <ItemGroup>
     <None Update="operation.2.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -25,5 +25,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Import Project="..\..\..\build\Props\QSharp.targets" />
 
 </Project>
