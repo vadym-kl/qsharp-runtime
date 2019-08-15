@@ -17,7 +17,7 @@ namespace Microsoft.Hack
 
         String ICallable.Name => "Foo";
         String ICallable.FullName => "Microsoft.Hack.Foo";
-        protected Quantum.Simulation.Circuitizer.Extensions.ApplyIfOne MicrosoftQuantumClassicalControlApplyIfOne
+        protected ICallable MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne
         {
             get;
             set;
@@ -66,7 +66,7 @@ namespace Microsoft.Hack
 #line 7 "C:/q-circuit2/src/Simulation/CircuitTransformer.Tests/operation.qs"
                     MicrosoftQuantumIntrinsicH.Apply(q1);
 #line 10 "C:/q-circuit2/src/Simulation/CircuitTransformer.Tests/operation.qs"
-                    MicrosoftQuantumClassicalControlApplyIfOne.Apply((MicrosoftQuantumIntrinsicM.Apply(q1), (MicrosoftQuantumIntrinsicX, q2)));
+                    MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((MicrosoftQuantumIntrinsicM.Apply(q1), (MicrosoftQuantumIntrinsicX, q2)));
                 }
 #line hidden
                 catch (Exception __arg2__)
@@ -96,7 +96,7 @@ namespace Microsoft.Hack
         ;
         public override void Init()
         {
-            this.MicrosoftQuantumClassicalControlApplyIfOne = this.Factory.Get<ApplyIfOne>(typeof(Microsoft.Quantum.ClassicalControl.ApplyIfOne));
+            this.MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne = this.Factory.Get<ICallable>(typeof(Microsoft.Quantum.Simulation.Circuitizer.Extensions.ApplyIfOne<>));
             this.Allocate = this.Factory.Get<Allocate>(typeof(Microsoft.Quantum.Intrinsic.Allocate));
             this.MicrosoftQuantumIntrinsicH = this.Factory.Get<IUnitary<Qubit>>(typeof(Microsoft.Quantum.Intrinsic.H));
             this.MicrosoftQuantumIntrinsicM = this.Factory.Get<ICallable<Qubit, Result>>(typeof(Microsoft.Quantum.Intrinsic.M));
