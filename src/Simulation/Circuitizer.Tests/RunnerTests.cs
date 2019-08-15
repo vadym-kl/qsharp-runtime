@@ -24,6 +24,20 @@ namespace Circuitizer.Tests
         }
 
         [Fact]
+        public void TestRun2()
+        {
+            var messages = new List<string>();
+            var code = File.ReadAllText("Operation.2.txt");
+            using (var simulator = new QuantumSimulator())
+            {
+                simulator.OnLog += messages.Add;
+                Runner.Run(code, "Microsoft.Hack.Foo", simulator);
+            }
+            Assert.Single(messages);
+            Assert.Equal("Hello quantum world library!", messages[0]);
+        }
+
+        [Fact]
         public void TestInvalidCode()
         {
             var code = "Some Invalid c# code.";
