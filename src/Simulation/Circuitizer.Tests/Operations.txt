@@ -1,0 +1,91 @@
+#pragma warning disable 1591
+using System;
+using Microsoft.Quantum.Core;
+using Microsoft.Quantum.Intrinsic;
+using Microsoft.Quantum.Simulation.Core;
+
+
+namespace Quantum.QSharpLibrary1
+{
+    public partial class HelloQLib : Operation<QVoid, QVoid>, ICallable
+    {
+        public HelloQLib(IOperationFactory m) : base(m)
+        {
+        }
+
+        String ICallable.Name => "HelloQLib";
+        String ICallable.FullName => "Quantum.QSharpLibrary1.HelloQLib";
+        protected ICallable<String, QVoid> MicrosoftQuantumIntrinsicMessage
+        {
+            get;
+            set;
+        }
+
+        public override Func<QVoid, QVoid> Body => (__in__) =>
+        {
+
+            MicrosoftQuantumIntrinsicMessage.Apply("Hello quantum world library!");
+
+            return QVoid.Instance;
+        }
+
+        ;
+        public override void Init()
+        {
+            this.MicrosoftQuantumIntrinsicMessage = this.Factory.Get<ICallable<String, QVoid>>(typeof(Microsoft.Quantum.Intrinsic.Message));
+        }
+
+        public override IApplyData __dataIn(QVoid data) => data;
+        public override IApplyData __dataOut(QVoid data) => data;
+        public static System.Threading.Tasks.Task<QVoid> Run(IOperationFactory __m__)
+        {
+            return __m__.Run<HelloQLib, QVoid, QVoid>(QVoid.Instance);
+        }
+    }
+
+    public partial class ExpectAguments : Operation<(Int64,Result), (Int64,Result)>, ICallable
+    {
+        public ExpectAguments(IOperationFactory m) : base(m)
+        {
+        }
+
+        public class In : QTuple<(Int64,Result)>, IApplyData
+        {
+            public In((Int64,Result) data) : base(data)
+            {
+            }
+
+            System.Collections.Generic.IEnumerable<Qubit> IApplyData.Qubits => null;
+        }
+
+        public class Out : QTuple<(Int64,Result)>, IApplyData
+        {
+            public Out((Int64,Result) data) : base(data)
+            {
+            }
+
+            System.Collections.Generic.IEnumerable<Qubit> IApplyData.Qubits => null;
+        }
+
+        String ICallable.Name => "ExpectAguments";
+        String ICallable.FullName => "Quantum.QSharpLibrary1.ExpectAguments";
+        public override Func<(Int64,Result), (Int64,Result)> Body => (__in__) =>
+        {
+            var (x,y) = __in__;
+
+            return (x, y);
+        }
+
+        ;
+        public override void Init()
+        {
+        }
+
+        public override IApplyData __dataIn((Int64,Result) data) => new In(data);
+        public override IApplyData __dataOut((Int64,Result) data) => new Out(data);
+        public static System.Threading.Tasks.Task<(Int64,Result)> Run(IOperationFactory __m__, Int64 x, Result y)
+        {
+            return __m__.Run<ExpectAguments, (Int64,Result), (Int64,Result)>((x, y));
+        }
+    }
+}

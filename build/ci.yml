@@ -3,8 +3,8 @@ trigger:
 - master
 
 variables:
-  Build.Major: 0
-  Build.Minor: 0
+  Build.Major: 999
+  Build.Minor: 999
   Drops.Dir: $(Build.ArtifactStagingDirectory)/drops
   Drop.Native: $(System.DefaultWorkingDirectory)/xplat
 
