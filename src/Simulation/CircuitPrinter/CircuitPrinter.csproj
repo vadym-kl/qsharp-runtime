@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <EnableDefaultCompileItems>False</EnableDefaultCompileItems>    
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+    <ItemGroup>
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+ 
+ <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    <PackageReference Include="Microsoft.Quantum.Compiler" Version="0.8.1907.1701" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Circuitizer.Tests\Tests.Microsoft.Quantum.Simulation.Circuitizer.csproj" />
+    <ProjectReference Include="..\Circuitizer\Microsoft.Quantum.Simulation.Circuitizer.csproj" />
+    <ProjectReference Include="..\CircuitTransformer.Tests\Tests.Microsoft.Quantum.CircuitTransformer.fsproj" />
+    <ProjectReference Include="..\CircuitTransformer\Microsoft.Quantum.CircuitTransformer.fsproj" />
+    <ProjectReference Include="..\CsharpGeneration\Microsoft.Quantum.CsharpGeneration.fsproj" />
+  </ItemGroup>
+  
+</Project>
