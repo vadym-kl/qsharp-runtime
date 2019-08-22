@@ -123,5 +123,4 @@ namespace Circuitizer.Tests.Extensions {
             Teleport(q1,q2);
         }
     }
-
 }

@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Features" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.9.0" />
+    <PackageReference Include="Microsoft.Quantum.Compiler" Version="0.8.1907.1701" />
   </ItemGroup>
 
   <ItemGroup>
