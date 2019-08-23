@@ -13,7 +13,7 @@ using Microsoft.Quantum.Simulation.Circuitizer;
 
 namespace Microsoft.Quantum.CircuitPrinter
 {
-    class Program
+    public class Program
     {
         Tests.Logger logger = new Tests.Logger();
 
