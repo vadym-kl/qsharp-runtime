@@ -1,4 +1,4 @@
-namespace Circuitizer.Tests.Extensions {
+namespace Circuitizer.Tests {
     open Microsoft.Quantum.Intrinsic;
 
     operation QRNG() : Result {

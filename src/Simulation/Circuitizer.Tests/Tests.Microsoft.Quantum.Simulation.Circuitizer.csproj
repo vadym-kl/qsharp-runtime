@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Circuitizer\Microsoft.Quantum.Simulation.Circuitizer.csproj" />
-    <ProjectReference Include="..\Simulators\Microsoft.Quantum.Simulators.csproj" />
+    <ProjectReference Include="..\CsharpGeneration\Microsoft.Quantum.CsharpGeneration.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
