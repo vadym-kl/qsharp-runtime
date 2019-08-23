@@ -11,7 +11,7 @@ using Microsoft.Quantum.QsCompiler.SyntaxTree;
 using Microsoft.Quantum.QsCompiler.Transformations.BasicTransformations;
 using Microsoft.Quantum.Simulation.Circuitizer;
 
-namespace CircuitPrinter
+namespace Microsoft.Quantum.CircuitPrinter
 {
     class Program
     {
