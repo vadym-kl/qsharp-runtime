@@ -14,7 +14,7 @@ namespace Circuitizer.Tests {
 
         let r = M(q);
 
-        if (r == One) {
+        if (r == Zero) {
             (Wrapper(q,_))(true);
             CNOT(ctrl, q);
             Adjoint Rx(1.2, q);

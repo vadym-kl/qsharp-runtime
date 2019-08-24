@@ -1,8 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-
+using Microsoft.Quantum.Intrinsic;
 using Microsoft.Quantum.QsCompiler.DataTypes;
 using Microsoft.Quantum.QsCompiler.SyntaxTokens;
 using Microsoft.Quantum.QsCompiler.SyntaxTree;
@@ -32,38 +35,26 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             { }
 
 
-            public (bool, TypedExpression, QsScope) IsConditionedOnOneStatement(QsStatementKind statement)
+            public (bool, QsResult, TypedExpression, QsScope) IsConditionedOnResultLiteralStatement(QsStatementKind statement)
             {
-
-                bool IsConstantOne(TypedExpression expression)
-                {
-                    if (expression.Expression is ExpressionKind.ResultLiteral result)
-                    {
-                        return (result.Item == QsResult.One);
-                    }
-
-                    return false;
-                }
-
-
                 if (statement is QsStatementKind.QsConditionalStatement cond)
                 {
                     if (cond.Item.ConditionalBlocks.Length == 1 && (cond.Item.ConditionalBlocks[0].Item1.Expression is ExpressionKind.EQ expression))
                     {
                         var scope = cond.Item.ConditionalBlocks[0].Item2.Body;
 
-                        if (IsConstantOne(expression.Item1))
+                        if (expression.Item1.Expression is ExpressionKind.ResultLiteral exp1)
                         {
-                            return (true, expression.Item2, scope);
+                            return (true, exp1.Item, expression.Item2, scope);
                         }
-                        else if (IsConstantOne(expression.Item2))
+                        else if (expression.Item2.Expression is ExpressionKind.ResultLiteral exp2)
                         {
-                            return (true, expression.Item1, scope);
+                            return (true, exp2.Item, expression.Item1, scope);
                         }
                     }
                 }
 
-                return (false, null, null);
+                return (false, null, null, null);
             }
 
             public bool AreSimpleCallStatements(IEnumerable<QsStatement> stmts) =>
@@ -96,7 +87,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
                 return new TypedExpression(expression, emptyTypes, returnType, inferredInfo, nullRange);
             }
 
-            public QsStatement CreateApplyIfStatement(TypedExpression conditionExpression, QsStatement s)
+            public QsStatement CreateApplyIfStatement(QsResult result, TypedExpression conditionExpression, QsStatement s)
             {
                 var (_, op, originalArgs) = IsSimpleCallStatement(s.Statement);
 
@@ -104,8 +95,11 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
                 var originalCall = CreateTypedExpression(ExpressionKind.NewValueTuple(new TypedExpression[] { op, originalArgs }.ToImmutableArray()));
 
-                var applyIfOne = Identifier.NewGlobalCallable(new QsQualifiedName(NonNullable<string>.New(typeof(ApplyIfOne<>).Namespace), NonNullable<string>.New("ApplyIfOne"))) as Identifier.GlobalCallable;
-                var id = CreateTypedExpression(ExpressionKind.NewIdentifier(applyIfOne, nullTypes));
+                var opType = (result == QsResult.One)
+                    ? typeof(ApplyIfOne<>)
+                    : typeof(ApplyIfZero<>);
+                var applyIfOp = Identifier.NewGlobalCallable(new QsQualifiedName(NonNullable<string>.New(opType.Namespace), NonNullable<string>.New(opType.Name.Remove(opType.Name.IndexOf('`'))))) as Identifier.GlobalCallable;
+                var id = CreateTypedExpression(ExpressionKind.NewIdentifier(applyIfOp, nullTypes));
 
                 var args = CreateTypedExpression(ExpressionKind.NewValueTuple(new TypedExpression[] { conditionExpression, originalCall }.ToImmutableArray()));
                 var call = CreateTypedExpression(ExpressionKind.NewCallLikeExpression(id, args));
@@ -118,7 +112,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             public (QsStatement, TypedExpression) CreateNewConditionVariable(TypedExpression value, QsStatement condStatement)
             {
                 _varCount++;
-                var name = $"__classic{_varCount}__";
+                var name = $"__classic_ctrl{_varCount}__";
 
                 // The typed expression with the identifier of the variable we just created:
                 var idExpression = CreateTypedExpression(ExpressionKind.NewIdentifier(Identifier.NewLocalVariable(NonNullable<string>.New(name)), QsNullable<ImmutableArray<ResolvedType>>.Null));
@@ -135,7 +129,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
                 var statements = ImmutableArray.CreateBuilder<QsStatement>();
                 foreach (var statement in scope.Statements)
                 {
-                    var (isCondition, conditionExpression, conditionScope) = IsConditionedOnOneStatement(statement.Statement);
+                    var (isCondition, result, conditionExpression, conditionScope) = IsConditionedOnResultLiteralStatement(statement.Statement);
 
                     if (isCondition && AreSimpleCallStatements(conditionScope.Statements))
                     {
@@ -150,7 +144,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
                         foreach (var stmt in conditionScope.Statements)
                         {
-                            statements.Add(CreateApplyIfStatement(conditionExpression, stmt));
+                            statements.Add(CreateApplyIfStatement(result, conditionExpression, stmt));
                         }
                     }
                     else

@@ -1,21 +1,23 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System;
 using System.IO;
-using Microsoft.Quantum.Simulation.Circuitizer;
-using Xunit;
-using Circuitizer.Tests.Extensions;
-using Microsoft.Quantum.QsCompiler.SyntaxTree;
-using Microsoft.Quantum.QsCompiler.Diagnostics;
-using Microsoft.VisualStudio.LanguageServer.Protocol;
-using Microsoft.Quantum.QsCompiler;
 using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Quantum.QsCompiler.Transformations;
-using System.Dynamic;
-using Microsoft.Quantum.QsCompiler.SyntaxTokens;
-using Assert = Xunit.Assert;
-using Microsoft.Quantum.QsCompiler.CsharpGeneration;
+
 using Microsoft.FSharp.Core;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.Quantum.QsCompiler;
+using Microsoft.Quantum.QsCompiler.CsharpGeneration;
+using Microsoft.Quantum.QsCompiler.Diagnostics;
+using Microsoft.Quantum.QsCompiler.SyntaxTokens;
+using Microsoft.Quantum.QsCompiler.SyntaxTree;
+using Microsoft.Quantum.QsCompiler.Transformations;
+using Microsoft.Quantum.Simulation.Circuitizer;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
+
+using Xunit;
+
+using Assert = Xunit.Assert;
 
 namespace Circuitizer.Tests
 {
@@ -103,12 +105,10 @@ namespace Circuitizer.Tests
                     GenerateFunctorSupport = true,
                 };
 
-            // How do we not hard code these paths?
-
             var references = new string[] { typeof(Microsoft.Quantum.Intrinsic.X).Assembly.Location };
             var loader = new CompilationLoader(sources, references, loadOptions, this.Logger);
+            
             var result = loader.GeneratedSyntaxTree.ToArray();
-
             return result;
         }
 
@@ -147,7 +147,7 @@ namespace Circuitizer.Tests
                 true,       // Controlled Wrapper([ctrl], (q, false));
                 true,       // (Wrapper(q,_))(false);
                 false,      // let r = M(q);
-                false,      // if (r == One) { ...
+                false,      // if (r == Zero) { ...
                 false,      // if (One == M(q)) {
                 false       // return r;
             };
@@ -161,34 +161,34 @@ namespace Circuitizer.Tests
         }
 
         [Fact]
-        public void TestIsConditionedOnOneStatement()
+        public void TestIsConditionedOnResultLiteralStatement()
         {
             var transformation = CreateTransformation();
             var body = FindOperationBody("ToyOperation");
             var stmts = body.Statements;
 
-            var expected = new bool[] {
-                false,      // H(q);
-                false,      // Adjoint Rx(1.2, q);
-                false,      // Controlled Wrapper([ctrl], (q, false));
-                false,      // (Wrapper(q,_))(false);
-                false,      // let r = M(q);
-                true,       // if (r == One) { ...
-                true,       // if (One == M(q)) {
-                false       // return r;
+            var expected = new (bool, QsResult)[] {
+                (false, null),               // H(q);
+                (false, null),               // Adjoint Rx(1.2, q);
+                (false, null),               // Controlled Wrapper([ctrl], (q, false));
+                (false, null),               // (Wrapper(q,_))(false);
+                (false, null),               // let r = M(q);
+                (true, QsResult.Zero),       // if (r == Zero) { ...
+                (true, QsResult.One),        // if (One == M(q)) {
+                (false, null)                // return r;
             };
 
-            var actual = (
-                from s in stmts
-                select transformation.IsConditionedOnOneStatement(s.Statement).Item1
-            ).ToArray();
+            var actual = stmts
+                .Select(s => transformation.IsConditionedOnResultLiteralStatement(s.Statement))
+                .Select(r => (r.Item1, r.Item2))
+                .ToArray();
 
             Assert.Equal(expected, actual);
         }
 
 
         [Fact]
-        public void TestTransformOne()
+        public void TestTransformToyOperation()
         {
             var transformation = CreateTransformation();
             var syntaxTree = LoadSyntaxTree($"ToyOperation.qs");
@@ -202,16 +202,17 @@ namespace Circuitizer.Tests
                 "MicrosoftQuantumIntrinsicRx.Adjoint.Apply((1.2D,q));",
                 "CircuitizerTestsWrapper.Controlled.Apply((newQArray<Qubit>(ctrl),(q,false)));",
                 "CircuitizerTestsWrapper.Partial(new Func<Boolean, (Qubit,Boolean)>((__arg1__) => (q,__arg1__))).Apply(false);",
+
                 "var r = MicrosoftQuantumIntrinsicM.Apply(q);",
 
-                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((r,(CircuitizerTestsWrapper.Partial(new Func<Boolean,(Qubit,Boolean)>((__arg2__) => (q,__arg2__))), true)));",
-                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((r,(MicrosoftQuantumIntrinsicCNOT,(ctrl,q))));",
-                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((r,(MicrosoftQuantumIntrinsicRx.Adjoint,(1.2D,q))));",
+                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfZero.Apply((r,(CircuitizerTestsWrapper.Partial(new Func<Boolean,(Qubit,Boolean)>((__arg2__) => (q,__arg2__))), true)));",
+                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfZero.Apply((r,(MicrosoftQuantumIntrinsicCNOT,(ctrl,q))));",
+                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfZero.Apply((r,(MicrosoftQuantumIntrinsicRx.Adjoint,(1.2D,q))));",
 
-                "var __classic1__ = MicrosoftQuantumIntrinsicM.Apply(q);",
-                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((__classic1__,(MicrosoftQuantumIntrinsicY,q)));",
-                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((__classic1__,(MicrosoftQuantumIntrinsicY.Controlled,(newQArray<Qubit>(ctrl),q))));",
-                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((__classic1__,(MicrosoftQuantumIntrinsicR,(Pauli.PauliY,1.2D,q))));",
+                "var __classic_ctrl1__ = MicrosoftQuantumIntrinsicM.Apply(q);",
+                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((__classic_ctrl1__,(MicrosoftQuantumIntrinsicY,q)));",
+                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((__classic_ctrl1__,(MicrosoftQuantumIntrinsicY.Controlled,(newQArray<Qubit>(ctrl),q))));",
+                "MicrosoftQuantumSimulationCircuitizerExtensionsApplyIfOne.Apply((__classic_ctrl1__,(MicrosoftQuantumIntrinsicR,(Pauli.PauliY,1.2D,q))));",
 
                 "return r;"
             }.Select(removeWhitespace).ToArray();
