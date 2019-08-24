@@ -48,6 +48,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Microsoft.Quantum.CircuitTr
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests.Microsoft.Quantum.CircuitTransformer", "src\Simulation\CircuitTransformer.Tests\Tests.Microsoft.Quantum.CircuitTransformer.fsproj", "{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Quantum.CircuitPrinter", "src\Simulation\CircuitPrinter\Microsoft.Quantum.CircuitPrinter.csproj", "{1344E9F7-1B2D-43DA-9F77-DFF28435C641}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -332,6 +334,22 @@ Global
 		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
 		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
 		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|x64.Build.0 = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.MinSizeRel|x64.ActiveCfg = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.MinSizeRel|x64.Build.0 = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Release|x64.ActiveCfg = Release|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Release|x64.Build.0 = Release|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.RelWithDebInfo|Any CPU.ActiveCfg = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.RelWithDebInfo|Any CPU.Build.0 = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.RelWithDebInfo|x64.ActiveCfg = Debug|Any CPU
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.RelWithDebInfo|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
