@@ -44,11 +44,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Quantum.Simulatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Microsoft.Quantum.Simulation.Circuitizer", "src\Simulation\Circuitizer.Tests\Tests.Microsoft.Quantum.Simulation.Circuitizer.csproj", "{0F3CA902-AC63-4010-AE89-E2AA767FFFED}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Microsoft.Quantum.CircuitTransformer", "src\Simulation\CircuitTransformer\Microsoft.Quantum.CircuitTransformer.fsproj", "{B3CC0BC1-A994-4FA7-930B-231649CD6D09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Quantum.CircuitPrinter", "src\Simulation\CircuitPrinter\Microsoft.Quantum.CircuitPrinter.csproj", "{1344E9F7-1B2D-43DA-9F77-DFF28435C641}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests.Microsoft.Quantum.CircuitTransformer", "src\Simulation\CircuitTransformer.Tests\Tests.Microsoft.Quantum.CircuitTransformer.fsproj", "{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Quantum.CircuitPrinter", "src\Simulation\CircuitPrinter\Microsoft.Quantum.CircuitPrinter.csproj", "{1344E9F7-1B2D-43DA-9F77-DFF28435C641}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "circuitizer", "circuitizer", "{A93B4EDF-C398-4569-BDA5-CE88392E6C0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -302,38 +300,6 @@ Global
 		{0F3CA902-AC63-4010-AE89-E2AA767FFFED}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
 		{0F3CA902-AC63-4010-AE89-E2AA767FFFED}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
 		{0F3CA902-AC63-4010-AE89-E2AA767FFFED}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Debug|x64.Build.0 = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.MinSizeRel|x64.ActiveCfg = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.MinSizeRel|x64.Build.0 = Debug|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Release|x64.ActiveCfg = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.Release|x64.Build.0 = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
-		{B3CC0BC1-A994-4FA7-930B-231649CD6D09}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Debug|x64.Build.0 = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.MinSizeRel|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.MinSizeRel|Any CPU.Build.0 = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.MinSizeRel|x64.ActiveCfg = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.MinSizeRel|x64.Build.0 = Debug|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Release|x64.ActiveCfg = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.Release|x64.Build.0 = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|x64.ActiveCfg = Release|Any CPU
-		{6F0C91A4-082C-457B-AA39-DEC91C5D9AD6}.RelWithDebInfo|x64.Build.0 = Release|Any CPU
 		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1344E9F7-1B2D-43DA-9F77-DFF28435C641}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -368,6 +334,9 @@ Global
 		{48206BD6-48DD-4442-A395-3A6594E4C9C6} = {A567C185-A429-418B-AFDE-6F1785BA4A77}
 		{B96E97F4-2DC8-45AC-ADF5-861D0D3073FC} = {A567C185-A429-418B-AFDE-6F1785BA4A77}
 		{915C2FC8-E9FB-4AC9-B233-F591880D7611} = {A567C185-A429-418B-AFDE-6F1785BA4A77}
+		{86C15752-06D5-4543-B2D0-CD5801F3E2AC} = {A93B4EDF-C398-4569-BDA5-CE88392E6C0D}
+		{0F3CA902-AC63-4010-AE89-E2AA767FFFED} = {A93B4EDF-C398-4569-BDA5-CE88392E6C0D}
+		{1344E9F7-1B2D-43DA-9F77-DFF28435C641} = {A93B4EDF-C398-4569-BDA5-CE88392E6C0D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {929C0464-86D8-4F70-8835-0A5EAF930821}

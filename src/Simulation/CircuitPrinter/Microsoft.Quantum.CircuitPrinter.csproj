@@ -18,8 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Circuitizer.Tests\Tests.Microsoft.Quantum.Simulation.Circuitizer.csproj" />
     <ProjectReference Include="..\Circuitizer\Microsoft.Quantum.Simulation.Circuitizer.csproj" />
-    <ProjectReference Include="..\CircuitTransformer.Tests\Tests.Microsoft.Quantum.CircuitTransformer.fsproj" />
-    <ProjectReference Include="..\CircuitTransformer\Microsoft.Quantum.CircuitTransformer.fsproj" />
     <ProjectReference Include="..\CsharpGeneration\Microsoft.Quantum.CsharpGeneration.fsproj" />
   </ItemGroup>
   

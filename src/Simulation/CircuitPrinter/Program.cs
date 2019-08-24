@@ -4,18 +4,25 @@ using System.IO;
 using System.Linq;
 using CommandLine;
 using Microsoft.Quantum.QsCompiler;
-using Microsoft.Quantum.QsCompiler.CircuitTransformer;
 using Microsoft.Quantum.QsCompiler.CsharpGeneration;
 using Microsoft.Quantum.QsCompiler.DataTypes;
+using Microsoft.Quantum.QsCompiler.Diagnostics;
 using Microsoft.Quantum.QsCompiler.SyntaxTree;
 using Microsoft.Quantum.QsCompiler.Transformations.BasicTransformations;
 using Microsoft.Quantum.Simulation.Circuitizer;
+using Microsoft.VisualStudio.LanguageServer.Protocol;
 
 namespace Microsoft.Quantum.CircuitPrinter
 {
+    public class Logger : LogTracker
+    {
+        protected override void Print(Diagnostic msg)
+            => Console.WriteLine(Formatting.MsBuildFormat(msg));
+    }
+
     public class Program
     {
-        Tests.Logger logger = new Tests.Logger();
+        Logger logger = new Logger();
 
         public enum OutputMode
         {
@@ -81,7 +88,8 @@ namespace Microsoft.Quantum.CircuitPrinter
                 Console.WriteLine("marker 12");
 
                 // Apply transformation
-                var transformedTree = CircuitTransformer.basicWalk(syntaxTree);
+                var transformer = new ClassicallyControlledConditions();
+                var transformedTree = syntaxTree.Select(transformer.Transform).ToArray();
                 var transformedCode = SimulationCode.generate(source, transformedTree);
                 var messages = new List<string>();
                 Console.WriteLine("marker 13");
