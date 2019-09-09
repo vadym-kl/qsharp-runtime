@@ -88,7 +88,7 @@ namespace Microsoft.Quantum.CircuitPrinter
                 Console.WriteLine("marker 12");
 
                 // Apply transformation
-                var transformer = new ClassicallyControlledConditions();
+                var transformer = new ClassicallyControlledTransformation();
                 var transformedTree = syntaxTree.Select(transformer.Transform).ToArray();
                 var transformedCode = SimulationCode.generate(source, transformedTree);
                 var messages = new List<string>();
