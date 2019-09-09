@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Microsoft.Quantum.Intrinsic;
+
 using Microsoft.Quantum.QsCompiler.DataTypes;
 using Microsoft.Quantum.QsCompiler.SyntaxTokens;
 using Microsoft.Quantum.QsCompiler.SyntaxTree;
@@ -16,10 +16,10 @@ using ExpressionKind = Microsoft.Quantum.QsCompiler.SyntaxTokens.QsExpressionKin
 
 namespace Microsoft.Quantum.Simulation.Circuitizer
 {
-    public class ClassicallyControlledConditions
-        : SyntaxTreeTransformation<ClassicallyControlledConditions.ScopeTransformation>
+    public class ClassicallyControlledTransformation
+        : SyntaxTreeTransformation<ClassicallyControlledTransformation.ScopeTransformation>
     {
-        public ClassicallyControlledConditions() 
+        public ClassicallyControlledTransformation() 
             : base(new ScopeTransformation())
         {
         }

@@ -122,8 +122,8 @@ namespace Circuitizer.Tests
             return OperationBodyFinder.Find(operationName, testsNS);
         }
 
-        private ClassicallyControlledConditions.ScopeTransformation CreateTransformation() =>
-            (new ClassicallyControlledConditions()).Scope as ClassicallyControlledConditions.ScopeTransformation;
+        private ClassicallyControlledTransformation.ScopeTransformation CreateTransformation() =>
+            (new ClassicallyControlledTransformation()).Scope as ClassicallyControlledTransformation.ScopeTransformation;
 
         private string[] ToCSharp(QsNamespace[] syntaxTreee, QsScope body)
         {

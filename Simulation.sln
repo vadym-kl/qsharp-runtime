@@ -40,7 +40,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Microsoft.Quantum.CsharpGen
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Microsoft.Quantum.CsharpGeneration.App", "src\Simulation\CsharpGeneration.App\Microsoft.Quantum.CsharpGeneration.App.fsproj", "{915C2FC8-E9FB-4AC9-B233-F591880D7611}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Quantum.Simulation.Circuitizer", "src\Simulation\Circuitizer\Microsoft.Quantum.Simulation.Circuitizer.csproj", "{86C15752-06D5-4543-B2D0-CD5801F3E2AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Quantum.Circuitizers", "src\Simulation\Circuitizer\Microsoft.Quantum.Circuitizers.csproj", "{86C15752-06D5-4543-B2D0-CD5801F3E2AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Microsoft.Quantum.Simulation.Circuitizer", "src\Simulation\Circuitizer.Tests\Tests.Microsoft.Quantum.Simulation.Circuitizer.csproj", "{0F3CA902-AC63-4010-AE89-E2AA767FFFED}"
 EndProject

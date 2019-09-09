@@ -1,11 +1,6 @@
-﻿using Microsoft.Quantum.Intrinsic;
+﻿using System;
+
 using Microsoft.Quantum.Simulation.Common;
-using Microsoft.Quantum.Simulation.Core;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Microsoft.Quantum.Simulation.Circuitizer
 {
