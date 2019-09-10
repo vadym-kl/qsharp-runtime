@@ -1,0 +1,4 @@
+TODO: VERIFY
+WIREPAD 10
+q0 G $R_{Y}(60)$ width=47 height=10 
+q0 OUT 0

@@ -1,0 +1,6 @@
+TODO: VERIFY
+WIREPAD 10
+q0 G:op="\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \draw (0.000000, 0.000000) node {{\scriptsize $X$}};":sh=0  q1 G:op="\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \draw (0.000000, 0.000000) node {{\scriptsize $Y$}};":sh=0  q2 G:op="\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \draw (0.000000, 0.000000) node {{\scriptsize $Z$}};":sh=0  
+q0 OUT 0
+q1 OUT 0
+q2 OUT 0

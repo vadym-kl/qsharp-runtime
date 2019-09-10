@@ -1,0 +1,6 @@
+TODO: VERIFY
+WIREPAD 10
+q0 G $\textrm{EXP}: $PauliZ$, {45}$ width=110 height=10 q1 G $\textrm{EXP}: $PauliY$, {45}$ width=110 height=10 q2 G $\textrm{EXP}: $PauliX$, {45}$ width=110 height=10 
+q0 OUT 0
+q1 OUT 0
+q2 OUT 0

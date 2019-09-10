@@ -1,0 +1,26 @@
+TODO: VERIFY
+WIREPAD 10
+q0 G H width=12 height=10 
+q1 G H width=12 height=10 
+q0 +q1 
+q1 +q0 
+q3 G Z width=12 height=10 q0 q1 
+q3 OUT 0
+q0 q1 SWAP 
+q0 G $S^{-1}$ width=26 height=10 
+q1 G T width=12 height=10 q0 
+q0 G $R_{X}(45)$ width=47 height=10 
+q0 G $\textrm{EXP}: $PauliX$, {45}$ width=110 height=10 q2 G $\textrm{EXP}: $PauliY$, {45}$ width=110 height=10 q1 G $\textrm{EXP}: $PauliX$, {45}$ width=110 height=10 
+q0 q2 SWAP q1 
+q0 G:op="\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \draw (0.000000, 0.000000) node {{\scriptsize $Z$}};":sh=0  
+q1 G $T^{-1}$ width=26 height=10 q3 
+q3 IN 0
+q3 G Z width=12 height=10 q0 q1 
+q3 OUT 0
+q1 G $T^{-1}$ width=26 height=10 
+q1 G $R_{Y}(60)$ width=47 height=10 
+q1 G:op="\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \draw (0.000000, 0.000000) node {{\scriptsize $X$}};":sh=0  q2 G:op="\draw[fill=white] (-5.000000, -4.000000) -- (3.000000,-4.000000) arc (-90:90:4.000000pt) -- (-5.000000, 4.000000) -- cycle; \draw (0.000000, 0.000000) node {{\scriptsize $Y$}};":sh=0  
+q0 G $R_{Y}(60)$ width=47 height=10 -q5 
+q0 OUT 0
+q1 OUT 0
+q2 OUT 0

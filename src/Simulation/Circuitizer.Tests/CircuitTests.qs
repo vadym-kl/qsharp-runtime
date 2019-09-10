@@ -114,7 +114,7 @@ namespace Circuitizer.Tests.Extensions {
             ApplyIfOne(data2, (X, target));
 
             // Reset our "register" qubit before releasing it.
-            Reset(register);
+            //Reset(register);
         }
     }
 

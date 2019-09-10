@@ -346,11 +346,6 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             ControlledZ(null, target);
         }
 
-        public void WriteToFile(string filePath)
-        {
-            File.WriteAllText(filePath, _programText.ToString());
-        }
-
         public void OnDump<T>(T location, IQArray<Qubit> qubits = null)
         {
             /* No-Op */
@@ -522,6 +517,8 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             _programText.Insert(idx + targetQubitName.Length, ":owire");
             _terminatedWires.Add(qubitId);
         }
+        public override string ToString() =>
+            _programText.ToString();
 
         /// <summary>
         /// This method generates the qpic representation of the circuit representation of the given Q# operation.
@@ -530,7 +527,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         public static string Print<OperatorType>()
             where OperatorType : Operation<QVoid, QVoid>
         {
-            var sim = new CircuitizerSimulator(new AsciiCircuitizer());
+            var sim = new CircuitizerSimulator(new QPicCircuitizer());
             var op = sim.Get<ICallable<QVoid, QVoid>, OperatorType>();
             op.Apply(QVoid.Instance);
 

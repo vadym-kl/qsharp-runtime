@@ -3,11 +3,35 @@ using System.IO;
 using Microsoft.Quantum.Simulation.Circuitizer;
 using Xunit;
 using Circuitizer.Tests.Extensions;
+using Microsoft.Quantum.Simulation.Core;
+using Xunit.Abstractions;
 
 namespace Circuitizer.Tests
 {
     public class CircuitizerTests
     {
+        private readonly ITestOutputHelper output;
+
+        public CircuitizerTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
+
+        private void AssertCircuit<Operation>(string filename)
+            where Operation : Operation<QVoid, QVoid>
+        {
+            var ascii = File.ReadAllText(Path.Combine("ExpectedOutputs", "ASCII", filename));
+            var qpic = File.ReadAllText(Path.Combine("ExpectedOutputs", "qpic", filename));
+
+            var actual_ascii = AsciiCircuitizer.Print<Operation>();
+            var actual_qpic = QPicCircuitizer.Print<Operation>();
+
+            this.output.WriteLine($"ASCII:\n{actual_ascii}\n\nQPIC:\n{actual_qpic}");
+
+            Assert.Equal(ascii, actual_ascii);
+            // todo: Assert.Equal(qpic, actual_qpic);
+        }
+
         private static void AssertCircuit(string filename, string actual)
         {
             var expected = File.ReadAllText(Path.Combine("ExpectedOutputs", filename));
@@ -15,89 +39,63 @@ namespace Circuitizer.Tests
         }
 
         [Fact]
-        public void TestOneGate()
+        public void TestBasicGate()
         {
-            // Single character gate
-            var circuitizer1 = new AsciiCircuitizer();
-            var circuitizerSimulator1 = new CircuitizerSimulator(circuitizer1);
-            var res = ZTest.Run(circuitizerSimulator1).Result;
-            AssertCircuit("Z.txt", circuitizer1.ToString());
+            AssertCircuit<ZTest>("Z.txt");
+        }
 
-            // multi character gate
-            var circuitizer2 = new AsciiCircuitizer();
-            var circuitizerSimulator2 = new CircuitizerSimulator(circuitizer2);
-            res = RyTest.Run(circuitizerSimulator2).Result;
-            AssertCircuit("Ry.txt", circuitizer2.ToString());
+        [Fact]
+        public void TestMulticharacterGate()
+        {
+            AssertCircuit<RyTest>("Ry.txt");
         }
 
         [Fact]
         public void Connectedgates()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = ConnectedExpTest.Run(circuitizerSimulator).Result;
-            AssertCircuit("Exp.txt", circuitizer.ToString());
+            AssertCircuit<ConnectedExpTest>("Exp.txt");
         }
 
         [Fact]
         public void TestSimpleSwap()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = SwapTest.Run(circuitizerSimulator).Result;
-            AssertCircuit("Swap.txt", circuitizer.ToString());
+            AssertCircuit<SwapTest>("Swap.txt");
         }
 
         [Fact]
         public void TestSimpleControlled()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = ControlledXTest.Run(circuitizerSimulator).Result;
-            AssertCircuit("ControlledX.txt", circuitizer.ToString());
+            AssertCircuit<ControlledXTest>("ControlledX.txt");
         }
 
         [Fact]
         public void TestControlledSwap()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = ControlledSwapTest.Run(circuitizerSimulator).Result;
-            AssertCircuit("ControlledSwap.txt", circuitizer.ToString());
+            AssertCircuit<ControlledSwapTest>("ControlledSwap.txt");
+        }
+
+        [Fact]
+        public void TestM()
+        {
+            AssertCircuit<MTest>("M.txt");
         }
 
         [Fact]
         public void TestMeasure()
         {
-            //single
-            var circuitizer1 = new AsciiCircuitizer();
-            var circuitizerSimulator1 = new CircuitizerSimulator(circuitizer1);
-            var res = MTest.Run(circuitizerSimulator1).Result;
-            AssertCircuit("M.txt", circuitizer1.ToString());
-
-            // multiple
-            var circuitizer2 = new AsciiCircuitizer();
-            var circuitizerSimulator2 = new CircuitizerSimulator(circuitizer2);
-            res = MeasureTest.Run(circuitizerSimulator2).Result;
-            AssertCircuit("Measure.txt", circuitizer2.ToString());
+            AssertCircuit<MeasureTest>("Measure.txt");
         }
 
         [Fact]
         public void TestTeleport()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = TeleportCircuitTest.Run(circuitizerSimulator).Result;
-            AssertCircuit("Teleport.txt", circuitizer.ToString());
+            AssertCircuit<TeleportCircuitTest>("Teleport.txt");
         }
 
         [Fact]
         public void TestIntergration()
         {
-            var circuitizer = new AsciiCircuitizer();
-            var circuitizerSimulator = new CircuitizerSimulator(circuitizer);
-            var res = IntegrateCircuitTest.Run(circuitizerSimulator).Result;
-            AssertCircuit("Intergration.txt", circuitizer.ToString());
+            AssertCircuit<IntegrateCircuitTest>("Intergration.txt");
         }
     }
 }
