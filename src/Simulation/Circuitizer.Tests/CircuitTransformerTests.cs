@@ -114,7 +114,7 @@ namespace Circuitizer.Tests
 
         // Assume the operation lives in a file with the same name as the operation we're testing.
         public QsScope FindOperationBody(string operationName) =>
-            FindOperationBody(operationName, LoadSyntaxTree($"{operationName}.qs"));
+            FindOperationBody(operationName, LoadSyntaxTree($"{operationName}.q"));
 
         public QsScope FindOperationBody(string operationName, QsNamespace[] syntaxTree)
         {
@@ -191,7 +191,7 @@ namespace Circuitizer.Tests
         public void TestTransformToyOperation()
         {
             var transformation = CreateTransformation();
-            var syntaxTree = LoadSyntaxTree($"ToyOperation.qs");
+            var syntaxTree = LoadSyntaxTree($"ToyOperation.q");
             var all = FindOperationBody("ToyOperation", syntaxTree);
 
             string removeWhitespace(string str) => string.Concat(str.Where(c => !char.IsWhiteSpace(c)));
