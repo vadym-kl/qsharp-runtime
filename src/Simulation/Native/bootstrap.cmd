@@ -21,7 +21,6 @@ pushd %BUILD_FOLDER%
 
 cmake -A "x64" ^
     -DBUILD_SHARED_LIBS:BOOL="1" ^
-    -G "Visual Studio 15 2017" ^
     ..
 
 popd
