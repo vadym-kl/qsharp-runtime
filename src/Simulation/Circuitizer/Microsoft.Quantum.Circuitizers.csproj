@@ -18,10 +18,6 @@
     <PackageReference Include="Microsoft.Quantum.Compiler" Version="0.9.1908.2906" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="CircuitizerSimulator\" />
-  </ItemGroup>
-
   <Import Project="..\..\..\build\Props\QSharp.targets" />
 
 </Project>

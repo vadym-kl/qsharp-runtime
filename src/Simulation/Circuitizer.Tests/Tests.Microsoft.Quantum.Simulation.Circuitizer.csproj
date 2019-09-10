@@ -24,10 +24,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="bin\" />
-  </ItemGroup>
   
   <Import Project="..\..\..\build\Props\QSharp.targets" />
 
