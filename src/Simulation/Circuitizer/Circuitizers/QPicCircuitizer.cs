@@ -24,7 +24,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         public override ResultValue GetValue()
         {
             // Not valid to call this.
-            return  ResultValue.Zero;
+            return ResultValue.Zero;
         }
 
         public int CompareTo(object obj)
@@ -76,7 +76,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void ClassicallyControlled(Result result, Action onZero, Action onOne)
         {
-            if(!(result is QPicResult qPicResult))
+            if (!(result is QPicResult qPicResult))
             {
                 throw new ArgumentException($"'{nameof(result)}' must be of type 'QPicResult'");
             }
@@ -96,7 +96,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void Reset(Qubit qubit)
         {
-            
+
             WriteOperation("Reset", qubit);
         }
 
@@ -124,7 +124,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         public void ControlledR(IQArray<Qubit> controls, Pauli axis, double angle, Qubit target)
         {
             string gateName = $"$R_{{{GetPauliAxis(axis)}}}({angle})$";
-            WriteOperation(gateName, target, controls);   
+            WriteOperation(gateName, target, controls);
         }
 
         public void ControlledR1(IQArray<Qubit> controls, double angle, Qubit target)
@@ -141,7 +141,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
         {
             var angle = GetAngleFromFrac(numerator, denominator);
             string gateName = $"$R_{{{GetPauliAxis(axis)}}}({angle})$";
-            WriteOperation(gateName, target, controls);   
+            WriteOperation(gateName, target, controls);
         }
 
         public void ControlledS(IQArray<Qubit> controls, Qubit target)
@@ -220,7 +220,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public Result M(Qubit target)
         {
-            return Measure(new QArray<Pauli>(new[] { Pauli.PauliZ }), new QArray<Qubit>( new[] { target }));
+            return Measure(new QArray<Pauli>(new[] { Pauli.PauliZ }), new QArray<Qubit>(new[] { target }));
         }
 
         public Result Measure(IQArray<Pauli> pauli, IQArray<Qubit> target)
@@ -288,7 +288,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
 
         public void R(Pauli axis, double angle, Qubit target)
         {
-           ControlledR(null, axis, angle, target);
+            ControlledR(null, axis, angle, target);
         }
 
         public void R1(double angle, Qubit target)
@@ -361,7 +361,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             AddStatement($"# {msg}");
         }
 
-                private void AddStatement(string statement)
+        private void AddStatement(string statement)
         {
             Console.WriteLine(statement);
             _programText.AppendLine(statement);
@@ -417,9 +417,9 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             AddStatement(statement);
         }
 
-        private string GetPauliAxis(Pauli axis) 
+        private string GetPauliAxis(Pauli axis)
         {
-            switch (axis) 
+            switch (axis)
             {
                 case Pauli.PauliI:
                     return "I";
@@ -448,17 +448,17 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
                 .Replace("}", "")
                 .Replace("^", "")
                 .Replace("_", "")
-                .Replace("\\frac","")
+                .Replace("\\frac", "")
                 .Replace("\\pi", "+")
                 .Replace("\\textrm", "");
             return operation.Length * 7 + 5;
         }
-        
+
         private int GetGateHeight(string operation)
         {
             if (operation.Contains("\\frac"))
             {
-            return 15; 
+                return 15;
             }
             return 10;
         }
@@ -488,7 +488,7 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             var p = GetPauliAxis(pauli);
             return $"\\textrm{{EXP}}: ${p}$, {{{angle}}}";
         }
-        
+
         private void UpdateLastUsedAsControls(Qubit target, IQArray<Qubit> controls)
         {
             var targets = new QArray<Qubit>();
@@ -521,6 +521,20 @@ namespace Microsoft.Quantum.Simulation.Circuitizer
             var idx = _programText.ToString().LastIndexOf(targetQubitName);
             _programText.Insert(idx + targetQubitName.Length, ":owire");
             _terminatedWires.Add(qubitId);
+        }
+
+        /// <summary>
+        /// This method generates the qpic representation of the circuit representation of the given Q# operation.
+        /// </summary>
+        /// <typeparam name="OperatorType">The Q# operation to render.</typeparam>
+        public static string Print<OperatorType>()
+            where OperatorType : Operation<QVoid, QVoid>
+        {
+            var sim = new CircuitizerSimulator(new AsciiCircuitizer());
+            var op = sim.Get<ICallable<QVoid, QVoid>, OperatorType>();
+            op.Apply(QVoid.Instance);
+
+            return sim.Circuitizer.ToString();
         }
     }
 }
