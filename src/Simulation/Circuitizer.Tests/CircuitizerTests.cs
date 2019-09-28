@@ -26,10 +26,12 @@ namespace Circuitizer.Tests
             var actual_ascii = AsciiCircuitizer.Print<Operation>();
             var actual_qpic = QPicCircuitizer.Print<Operation>();
 
-            this.output.WriteLine($"ASCII:\n{actual_ascii}\n\nQPIC:\n{actual_qpic}");
-
             ascii = ascii.Replace("\r\n", "\n");
             actual_ascii = actual_ascii.Replace("\r\n", "\n");
+
+            this.output.WriteLine($"Actual ASCII:\n{actual_ascii}\n\n");
+            this.output.WriteLine($"Expected ASCII:\n{ascii}\n\n");
+            // this.output.WriteLine($"Actual QPIC:\n{actual_qpic}");
 
             Assert.Equal(ascii, actual_ascii);
             // todo: Assert.Equal(qpic, actual_qpic);
