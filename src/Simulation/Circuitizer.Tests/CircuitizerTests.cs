@@ -28,6 +28,9 @@ namespace Circuitizer.Tests
 
             this.output.WriteLine($"ASCII:\n{actual_ascii}\n\nQPIC:\n{actual_qpic}");
 
+            ascii = ascii.Replace("\r\n", "\n");
+            actual_ascii = actual_ascii.Replace("\r\n", "\n");
+
             Assert.Equal(ascii, actual_ascii);
             // todo: Assert.Equal(qpic, actual_qpic);
         }
@@ -35,6 +38,8 @@ namespace Circuitizer.Tests
         private static void AssertCircuit(string filename, string actual)
         {
             var expected = File.ReadAllText(Path.Combine("ExpectedOutputs", filename));
+            expected = expected.Replace("\r\n", "\n");
+            actual = actual.Replace("\r\n", "\n");
             Assert.Equal(expected, actual);
         }
 
