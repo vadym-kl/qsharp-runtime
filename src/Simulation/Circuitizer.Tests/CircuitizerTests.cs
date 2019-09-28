@@ -26,8 +26,9 @@ namespace Circuitizer.Tests
             var actual_ascii = AsciiCircuitizer.Print<Operation>();
             var actual_qpic = QPicCircuitizer.Print<Operation>();
 
-            ascii = ascii.Replace("\r\n", "\n");
-            actual_ascii = actual_ascii.Replace("\r\n", "\n");
+            char[] trimChars = { ' ', '\n' };
+            ascii = ascii.Replace("\r\n", "\n").TrimEnd(trimChars);
+            actual_ascii = actual_ascii.Replace("\r\n", "\n").TrimEnd(trimChars);
 
             this.output.WriteLine($"Actual ASCII:\n{actual_ascii}\n\n");
             this.output.WriteLine($"Expected ASCII:\n{ascii}\n\n");
